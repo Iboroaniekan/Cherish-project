@@ -1,0 +1,69 @@
+/* =====================================================
+   AUTH (SIGNUP / LOGIN) PAGES ONLY
+===================================================== */
+
+.auth-body{
+  background: var(--hero-bg);
+}
+
+.auth-wrap{
+  min-height: calc(100vh - 72px);
+  display: flex;
+}
+
+.auth-info{
+  background:
+    radial-gradient(800px 300px at 30% 15%, rgba(11,110,58,.18), transparent 60%),
+    #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.05);
+}
+
+.auth-badge{
+  display: inline-flex;
+  align-items: center;
+  padding: .4rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--brand-dark);
+  font-size: .85rem;
+}
+
+.auth-points{
+  display: grid;
+  gap: .75rem;
+}
+
+.auth-point{
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: #334155;
+}
+
+.auth-dot{
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--brand);
+}
+
+.auth-card{
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(2, 6, 23, 0.06);
+}
+
+.auth-secure{
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #334155;
+}

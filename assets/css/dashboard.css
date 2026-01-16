@@ -1,0 +1,152 @@
+/* Dashboard page only */
+
+.dash-body{
+  background: var(--hero-bg);
+}
+
+.dash-hero{
+  background:
+    radial-gradient(1200px 380px at 20% 15%, rgba(11,110,58,.18), transparent 60%),
+    radial-gradient(900px 480px at 85% 25%, rgba(34,197,94,.15), transparent 55%),
+    #ffffff;
+  border-bottom: 1px solid var(--border);
+}
+
+.dash-kicker{
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .85rem;
+  color: var(--brand-dark);
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: .4rem .8rem;
+  border-radius: 999px;
+}
+
+.dash-card{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 10px 22px rgba(2, 6, 23, 0.05);
+}
+
+.dash-user{
+  border: 1px solid var(--border);
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.dash-stats{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.stat-card{
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: .75rem .8rem;
+}
+
+.stat-icon{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-light);
+  color: var(--brand);
+}
+
+/* Chips */
+.chip{
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .35rem .6rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #334155;
+}
+
+.chip-green{
+  background: var(--brand-light);
+  border-color: rgba(11,110,58,.25);
+  color: var(--brand-dark);
+}
+
+.chip-outline{
+  border-color: rgba(11,110,58,.25);
+  color: var(--brand-dark);
+}
+
+/* Status Pills */
+.status-pill{
+  display: inline-flex;
+  align-items: center;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.status-pending{
+  background: #fff7ed;
+  color: #9a3412;
+  border-color: #fed7aa;
+}
+
+.status-queried{
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.status-approved{
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+/* Status guide list */
+.status-guide{
+  display: grid;
+  gap: .8rem;
+}
+
+.sg-item{
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+/* application  */
+.mini-card{
+  display: flex;
+  gap: .8rem;
+  align-items: center;
+  padding: .9rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.mini-icon{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--brand-light);
+  color: var(--brand);
+  font-size: 1.15rem;
+}

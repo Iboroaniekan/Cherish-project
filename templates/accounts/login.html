@@ -1,0 +1,183 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | iCRP</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Optional icons (CDN). Remove if you don’t want icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Main site theme (green overrides, navbar, footer, etc.) -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <!-- Auth-only styles (shared by signup + login) -->
+  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+
+<body class="auth-body">
+
+  <!-- Top Nav -->
+  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'frontend:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="CAC Logo" class="brand-logo" width="164" height="55"/>
+
+      </a>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'accounts:signup' %}">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Auth Layout -->
+  <main class="auth-wrap">
+    <div class="container py-4 py-lg-5">
+      <div class="row g-4 align-items-stretch justify-content-center">
+
+        <!-- Left Info Panel -->
+        <div class="col-12 col-lg-5">
+          <div class="auth-info h-100 p-4 p-md-5">
+            <div class="auth-badge mb-3">
+              <i class="fa-solid fa-shield-halved me-2"></i>
+              Corporate Affairs Commission (CAC)
+            </div>
+
+            <h1 class="h3 fw-bold mb-2">Welcome back</h1>
+            <p class="text-muted mb-4">
+              Login to continue your applications, track requests, and access CAC online services.
+            </p>
+
+            <div class="auth-points">
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Continue saved applications</span>
+              </div>
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Access dashboard &amp; history</span>
+              </div>
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Secure account protection</span>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="small text-muted">
+              Don’t have an account?
+              <a class="link-primary fw-semibold text-decoration-none" href="{% url 'accounts:signup' %}">Create one</a>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Login Card -->
+        <div class="col-12 col-lg-7">
+          <div class="auth-card h-100 p-4 p-md-5">
+
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <h2 class="h5 fw-bold mb-1">Login</h2>
+                <p class="text-muted mb-0 small">Enter your credentials to access your account.</p>
+              </div>
+              <div class="auth-secure small">
+                <i class="fa-solid fa-lock me-1"></i> Secure
+              </div>
+            </div>
+
+            <form action="#" method="post" class="needs-validation" novalidate>
+              <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email Address</label>
+                <input type="email" class="form-control" placeholder="name@example.com" required>
+                <div class="invalid-feedback">Please enter a valid email.</div>
+              </div>
+
+              <!-- Password -->
+              <div class="mb-2">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                  <input id="pw" type="password" class="form-control" placeholder="Enter password" required>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePw" aria-label="Toggle password">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <div class="invalid-feedback">Password is required.</div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="remember">
+                  <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                <a href="#" class="link-primary text-decoration-none fw-semibold">Forgot password?</a>
+              </div>
+
+              <div class="d-grid d-sm-flex gap-2 mt-2">
+                <button class="btn btn-primary btn-lg flex-sm-grow-1" type="submit">
+                  Login <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+                <a class="btn btn-outline-primary btn-lg" href="{% url 'frontend:home' %}">Back to Home</a>
+              </div>
+
+              <div class="small text-muted mt-3">
+                By logging in, you agree to the
+                <a class="link-primary text-decoration-none" href="#">Terms of Use</a>.
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 small text-muted">
+        <div>© 2026 Corporate Affairs Commission (CAC), Nigeria</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a class="footer-link" href="#">Privacy Policy</a>
+          <a class="footer-link" href="#">Terms of Use</a>
+          <a class="footer-link" href="#">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Bootstrap validation
+    (() => {
+      const form = document.querySelector('.needs-validation');
+      form.addEventListener('submit', (event) => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+
+    // Toggle password show/hide
+    const toggle = document.getElementById('togglePw');
+    const pw = document.getElementById('pw');
+    toggle.addEventListener('click', () => {
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      const icon = toggle.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+  </script>
+
+</body>
+</html>

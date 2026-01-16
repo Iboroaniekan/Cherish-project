@@ -1,0 +1,227 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up | iCRP</title>
+
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Optional icons (CDN). Remove if you don’t want icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+ <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  <!-- Your custom green theme -->
+  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+</head>
+
+<body class="auth-body">
+
+  <!-- Top Nav -->
+  <nav class="navbar navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'frontend:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="CAC Logo" class="brand-logo" width="164" height="55"/>
+      </a>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'accounts:login' %}">Login</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Auth Layout -->
+  <main class="auth-wrap">
+    <div class="container py-4 py-lg-5">
+      <div class="row g-4 align-items-stretch justify-content-center">
+
+        <!-- Left Info Panel -->
+        <div class="col-12 col-lg-5">
+          <div class="auth-info h-100 p-4 p-md-5">
+            <div class="auth-badge mb-3">
+              <i class="fa-solid fa-shield-halved me-2"></i>
+              Corporate Affairs Commission (CAC)
+            </div>
+
+            <h1 class="h3 fw-bold mb-2">Create your iCRP account</h1>
+            <p class="text-muted mb-4">
+              Use your account to reserve names, register entities, file post-incorporation updates,
+              and access CAC services online.
+            </p>
+
+            <div class="auth-points">
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Secure portal access</span>
+              </div>
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Track applications from your dashboard</span>
+              </div>
+              <div class="auth-point">
+                <span class="auth-dot"></span>
+                <span>Support &amp; FAQs available</span>
+              </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="small text-muted">
+              Already have an account?
+              <a class="link-primary fw-semibold text-decoration-none" href="{% url 'accounts:login' %}">Login here</a>.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Signup Card -->
+        <div class="col-12 col-lg-7">
+          <div class="auth-card h-100 p-4 p-md-5">
+            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <h2 class="h5 fw-bold mb-1">Sign Up</h2>
+                <p class="text-muted mb-0 small">Fill in your details to create an account.</p>
+              </div>
+              <div class="auth-secure small">
+                <i class="fa-solid fa-lock me-1"></i> Secure
+              </div>
+            </div>
+
+            <form action="#" method="post" class="needs-validation" novalidate>
+              <!-- Account Type -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Account Type</label>
+                <select class="form-select" required>
+                  <option value="" selected disabled>Select account type</option>
+                  <option>Public User</option>
+                  <option>Accredited Agent</option>
+                  <option>Entity / Organization</option>
+                </select>
+                <div class="invalid-feedback">Please select an account type.</div>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">First Name</label>
+                  <input type="text" class="form-control" placeholder="Enter first name" required>
+                  <div class="invalid-feedback">First name is required.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Last Name</label>
+                  <input type="text" class="form-control" placeholder="Enter last name" required>
+                  <div class="invalid-feedback">Last name is required.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Email Address</label>
+                  <input type="email" class="form-control" placeholder="name@example.com" required>
+                  <div class="invalid-feedback">Valid email is required.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Phone Number</label>
+                  <input type="tel" class="form-control" placeholder="+234..." required>
+                  <div class="invalid-feedback">Phone number is required.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Password</label>
+                  <div class="input-group">
+                    <input id="pw" type="password" class="form-control" placeholder="Create a password" minlength="8" required>
+                    <button class="btn btn-outline-secondary" type="button" id="togglePw" aria-label="Toggle password">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <div class="invalid-feedback">Password must be at least 8 characters.</div>
+                  </div>
+                  <div class="form-text">Use at least 8 characters.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-semibold">Confirm Password</label>
+                  <input id="pw2" type="password" class="form-control" placeholder="Confirm password" minlength="8" required>
+                  <div class="invalid-feedback">Please confirm your password.</div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                      I agree to the <a class="link-primary text-decoration-none" href="#">Terms of Use</a> and
+                      <a class="link-primary text-decoration-none" href="#">Privacy Policy</a>.
+                    </label>
+                    <div class="invalid-feedback">You must accept the terms to continue.</div>
+                  </div>
+                </div>
+
+                <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
+                  <button class="btn btn-primary btn-lg flex-sm-grow-1" type="submit">
+                    Create Account <i class="fa-solid fa-arrow-right ms-2"></i>
+                  </button>
+                  <a class="btn btn-outline-primary btn-lg" href="{% url 'frontend:home' %}">Back to Home</a>
+                </div>
+
+                <div class="col-12">
+                  <div class="small text-muted mt-2">
+                    Already registered?
+                    <a class="link-primary fw-semibold text-decoration-none" href="{% url 'accounts:login' %}">Login</a>.
+                  </div>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 small text-muted">
+        <div>© 2026 Corporate Affairs Commission (CAC), Nigeria</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a class="footer-link" href="#">Privacy Policy</a>
+          <a class="footer-link" href="#">Terms of Use</a>
+          <a class="footer-link" href="#">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Bootstrap validation + password match
+    (() => {
+      const form = document.querySelector('.needs-validation');
+      form.addEventListener('submit', (event) => {
+        const pw = document.getElementById('pw');
+        const pw2 = document.getElementById('pw2');
+
+        if (pw.value !== pw2.value) pw2.setCustomValidity("Passwords do not match");
+        else pw2.setCustomValidity("");
+
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+
+    // Toggle password
+    const toggle = document.getElementById('togglePw');
+    const pw = document.getElementById('pw');
+    toggle.addEventListener('click', () => {
+      pw.type = pw.type === 'password' ? 'text' : 'password';
+      const icon = toggle.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+/* Shared styles for new/modify application pages */
+
+.steps-list{
+  display: grid;
+  gap: .75rem;
+}
+
+.step-row{
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+  padding: .75rem .85rem;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.step-row.active{
+  border-color: rgba(11,110,58,.35);
+  background: var(--brand-light);
+}
+
+.step-bullet{
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: var(--brand);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.summary-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .55rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.summary-row:last-child{
+  border-bottom: none;
+}
+
+/* Upload previews */
+.preview{
+  min-height: 0;
+}
+
+.preview-img{
+  width: 100%;
+  max-width: 280px;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.preview-box{
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .75rem .9rem;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #334155;
+}
