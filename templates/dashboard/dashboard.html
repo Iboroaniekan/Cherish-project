@@ -1,0 +1,304 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard | iCRP</title>
+
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Optional icons (CDN) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Your green theme -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <!-- Dashboard-only styles -->
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body class="dash-body">
+
+  <!-- Topbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'frontend:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="CAC Logo" class="brand-logo" width="164" height="55" />
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div id="dashNav" class="collapse navbar-collapse">
+        <ul class="navbar-nav mx-lg-auto mt-3 mt-lg-0 gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#register">Register Business</a></li>
+          <li class="nav-item"><a class="nav-link" href="#uploads">Uploads</a></li>
+          <li class="nav-item"><a class="nav-link" href="#applications">Applications</a></li>
+          <li class="nav-item"><a class="nav-link" href="#support">Support</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+          <div class="dash-user small text-muted d-none d-lg-inline">
+            <i class="fa-solid fa-user me-1"></i> Welcome, <span class="fw-semibold">User</span>
+          </div>
+          <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'frontend:home' %}">Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="dash-hero">
+    <div class="container py-4 py-lg-5">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-8">
+          <div class="dash-kicker mb-2">
+            <i class="fa-solid fa-shield-halved me-2"></i>
+            Account • Corporate Affairs Commission
+          </div>
+          <h1 class="h3 fw-bold mb-2">Dashboard Overview</h1>
+          <p class="text-muted mb-0">
+            Start a new business name registration, upload required documents, and track application status.
+          </p>
+        </div>
+        <div class="col-lg-4">
+          <div class="dash-stats">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+              <div>
+                <div class="small text-muted">Pending</div>
+                <div class="fw-bold fs-5">2</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div>
+                <div class="small text-muted">Queried</div>
+                <div class="fw-bold fs-5">1</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+              <div>
+                <div class="small text-muted">Approved</div>
+                <div class="fw-bold fs-5">1</div>
+              </div>
+            </div>
+          </div>
+          <div class="small text-muted mt-2">
+            (These numbers are demo — you’ll replace with real data later.)
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="py-4">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- LEFT COLUMN -->
+      <div class="col-12 col-lg-8">
+
+        <!-- Register Business Name -->
+        <section id="register" class="dash-card p-4 p-md-5">
+          <div class="d-flex align-items-start justify-content-between gap-2 mb-3">
+            <div>
+              <h2 class="h5 fw-bold mb-1">Register a Business Name</h2>
+              <p class="text-muted mb-0 small">
+                Start a new registration and complete the application on the next page.
+              </p>
+            </div>
+            <span class="chip chip-green">New Application</span>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="mini-card">
+                <div class="mini-icon"><i class="fa-solid fa-file-circle-plus"></i></div>
+                <div>
+                  <div class="fw-semibold">Create New Application</div>
+                  <div class="small text-muted">Fill business + owner details and submit.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <div class="mini-card">
+                <div class="mini-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                <div>
+                  <div class="fw-semibold">Continue Draft</div>
+                  <div class="small text-muted">Resume from where you stopped.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
+              <a class="btn btn-primary btn-lg" href="new-application.html">
+                Start New Application <i class="fa-solid fa-arrow-right ms-2"></i>
+              </a>
+
+              <a class="btn btn-outline-primary btn-lg" href="#applications">
+                View My Applications
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Applications Table -->
+        <section id="applications" class="dash-card p-4 p-md-5 mt-4">
+          <div class="d-flex align-items-start justify-content-between gap-2 mb-3 flex-wrap">
+            <div>
+              <h2 class="h5 fw-bold mb-1">My Applications</h2>
+              <p class="text-muted mb-0 small">
+                Track submitted applications — Pending, Queried, or Approved.
+              </p>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap mt-2 mt-md-0">
+              <input class="form-control form-control-sm" style="min-width: 210px;"
+                     type="text" placeholder="Search by Ref / Name" />
+              <select class="form-select form-select-sm" style="min-width: 160px;">
+                <option value="all" selected>All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="queried">Queried</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr class="text-muted small">
+                  <th>Reference</th>
+                  <th>Business Name</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-semibold">BN-2026-00021</td>
+                  <td>Green Farms Ventures</td>
+                  <td>Jan 12, 2026</td>
+                  <td><span class="status-pill status-pending">Pending</span></td>
+                  <td class="text-end">
+                    <button class="btn btn-outline-secondary btn-sm" type="button" disabled>
+                      Awaiting Review
+                    </button>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="fw-semibold">BN-2026-00018</td>
+                  <td>Bright Spark Services</td>
+                  <td>Jan 09, 2026</td>
+                  <td><span class="status-pill status-queried">Queried</span></td>
+                  <td class="text-end">
+                    <a class="btn btn-primary btn-sm" href="modify-application.html">
+                      Modify Application <i class="fa-solid fa-pen-to-square ms-1"></i>
+                    </a>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="fw-semibold">BN-2026-00011</td>
+                  <td>Emerald Digital Hub</td>
+                  <td>Jan 03, 2026</td>
+                  <td><span class="status-pill status-approved">Approved</span></td>
+                  <td class="text-end">
+                    <a class="btn btn-outline-primary btn-sm" href="certificate.pdf" download>
+                      Download Certificate <i class="fa-solid fa-download ms-1"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="small text-muted mt-2">
+            Tip: If your application is <b>Queried</b>, open it, correct the issues, and resubmit.
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN (THIS WAS MISSING) -->
+      <div class="col-12 col-lg-4">
+
+        <!-- Status Legend -->
+        <section class="dash-card p-4">
+          <h2 class="h6 fw-bold mb-2">Status Guide</h2>
+          <div class="status-guide">
+            <div class="sg-item">
+              <span class="status-pill status-pending">Pending</span>
+              <span class="small text-muted">CAC is reviewing your submission.</span>
+            </div>
+            <div class="sg-item">
+              <span class="status-pill status-queried">Queried</span>
+              <span class="small text-muted">Corrections required. Modify &amp; resubmit.</span>
+            </div>
+            <div class="sg-item">
+              <span class="status-pill status-approved">Approved</span>
+              <span class="small text-muted">Certificate is ready for download.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Support -->
+        <section id="support" class="dash-card p-4 mt-4">
+          <h2 class="h6 fw-bold mb-2">Help &amp; Support</h2>
+          <p class="text-muted small mb-3">
+            Need help with your application?
+          </p>
+
+          <!-- changed from d-grid to d-flex so buttons don’t stretch -->
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-primary" href="#">FAQs</a>
+            <a class="btn btn-outline-primary" href="#">Contact Support</a>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+  </div>
+</main>
+
+
+  <footer class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 small text-muted">
+        <div>© 2026 Corporate Affairs Commission (CAC), Nigeria</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a class="footer-link" href="#">Privacy Policy</a>
+          <a class="footer-link" href="#">Terms of Use</a>
+          <a class="footer-link" href="#">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Simple Bootstrap validation
+    (() => {
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', (event) => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+
+</body>
+</html>
