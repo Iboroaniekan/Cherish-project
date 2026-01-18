@@ -19,6 +19,17 @@
 
 <body class="auth-body">
 
+                  {% if messages %}
+  <div class="container mt-1">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" style="color:red;text-align:center;">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
   <!-- Top Nav -->
   <nav class="navbar navbar-light bg-white border-bottom sticky-top">
     <div class="container">
@@ -74,7 +85,7 @@
             </div>
           </div>
         </div>
-
+      
         <!-- Right Signup Card -->
         <div class="col-12 col-lg-7">
           <div class="auth-card h-100 p-4 p-md-5">
@@ -88,11 +99,13 @@
               </div>
             </div>
 
-            <form action="#" method="post" class="needs-validation" novalidate>
+            <form action="{% url 'accounts:signup' %}" method="post" class="needs-validation" novalidate>
+              {% csrf_token %}
+   
               <!-- Account Type -->
               <div class="mb-3">
                 <label class="form-label fw-semibold">Account Type</label>
-                <select class="form-select" required>
+                <select class="form-select"  name="account_type" required>
                   <option value="" selected disabled>Select account type</option>
                   <option>Public User</option>
                   <option>Accredited Agent</option>
@@ -104,32 +117,32 @@
               <div class="row g-3">
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">First Name</label>
-                  <input type="text" class="form-control" placeholder="Enter first name" required>
+                  <input type="text" class="form-control" name="first_name" placeholder="Enter first name" required>
                   <div class="invalid-feedback">First name is required.</div>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">Last Name</label>
-                  <input type="text" class="form-control" placeholder="Enter last name" required>
+                  <input type="text" class="form-control" name="last_name" placeholder="Enter last name" required>
                   <div class="invalid-feedback">Last name is required.</div>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">Email Address</label>
-                  <input type="email" class="form-control" placeholder="name@example.com" required>
+                  <input type="email" class="form-control"  name="email" placeholder="name@example.com" required>
                   <div class="invalid-feedback">Valid email is required.</div>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">Phone Number</label>
-                  <input type="tel" class="form-control" placeholder="+234..." required>
+                  <input type="tel" class="form-control"  name="phone_number" placeholder="+234..." required>
                   <div class="invalid-feedback">Phone number is required.</div>
                 </div>
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">Password</label>
                   <div class="input-group">
-                    <input id="pw" type="password" class="form-control" placeholder="Create a password" minlength="8" required>
+                    <input id="pw" type="password" class="form-control" placeholder="Create a password" minlength="8" name="password1" required>
                     <button class="btn btn-outline-secondary" type="button" id="togglePw" aria-label="Toggle password">
                       <i class="fa-solid fa-eye"></i>
                     </button>
@@ -140,13 +153,19 @@
 
                 <div class="col-12 col-md-6">
                   <label class="form-label fw-semibold">Confirm Password</label>
-                  <input id="pw2" type="password" class="form-control" placeholder="Confirm password" minlength="8" required>
-                  <div class="invalid-feedback">Please confirm your password.</div>
+                  <div class="input-group has-validation">
+                    <input id="pw2" type="password" class="form-control" placeholder="Confirm password" minlength="8" name="password2" required>
+                    <button class="btn btn-outline-secondary" type="button" id="togglePw2" aria-label="Toggle password" tabindex="-1">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                  </div>
+                 <div class="invalid-feedback"  >Please confirm your password.</div>
                 </div>
+                 
 
                 <div class="col-12">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <input class="form-check-input" type="checkbox" id="terms" name="terms" value="1"  required>
                     <label class="form-check-label" for="terms">
                       I agree to the <a class="link-primary text-decoration-none" href="#">Terms of Use</a> and
                       <a class="link-primary text-decoration-none" href="#">Privacy Policy</a>.
@@ -194,34 +213,70 @@
   <!-- Bootstrap JS (CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
-    // Bootstrap validation + password match
-    (() => {
-      const form = document.querySelector('.needs-validation');
-      form.addEventListener('submit', (event) => {
-        const pw = document.getElementById('pw');
-        const pw2 = document.getElementById('pw2');
+ <script>
+  // Bootstrap validation + password match
+  (() => {
+    const form = document.querySelector('.needs-validation');
+    if (!form) return;
 
-        if (pw.value !== pw2.value) pw2.setCustomValidity("Passwords do not match");
-        else pw2.setCustomValidity("");
-
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      }, false);
-    })();
-
-    // Toggle password
-    const toggle = document.getElementById('togglePw');
     const pw = document.getElementById('pw');
+    const pw2 = document.getElementById('pw2');
+
+    function markMismatch() {
+      if (!pw || !pw2) return;
+
+      const mismatch = pw.value && pw2.value && pw.value !== pw2.value;
+
+      if (mismatch) {
+        pw2.classList.add('is-invalid');
+        pw2.classList.remove('is-valid');
+      } else {
+        // remove mismatch styling (Bootstrap required validation still applies)
+        pw2.classList.remove('is-invalid');
+      }
+    }
+
+    pw?.addEventListener('input', markMismatch);
+    pw2?.addEventListener('input', markMismatch);
+
+    form.addEventListener('submit', (event) => {
+      markMismatch();
+
+      // Only block submit if required fields are missing
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      form.classList.add('was-validated');
+    }, false);
+  })();
+  // Generic password toggle helper
+  function setupPasswordToggle(toggleId, inputId) {
+    const toggle = document.getElementById(toggleId);
+    const input = document.getElementById(inputId);
+
+    if (!toggle || !input) return;
+
     toggle.addEventListener('click', () => {
-      pw.type = pw.type === 'password' ? 'text' : 'password';
       const icon = toggle.querySelector('i');
-      icon.classList.toggle('fa-eye');
-      icon.classList.toggle('fa-eye-slash');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
     });
-  </script>
+  }
+
+  // Initialize toggles
+  setupPasswordToggle('togglePw', 'pw');
+  setupPasswordToggle('togglePw2', 'pw2');
+</script>
+
 </body>
 </html>
