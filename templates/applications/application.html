@@ -1,0 +1,350 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Application | iCRP</title>
+
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Optional icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <!-- Your theme -->
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/application.css' %}">
+</head>
+
+<body class="dash-body">
+
+  <!-- Topbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'dashboard:home' %}">
+        <img src="{% static 'images/logo.png' %}" alt="CAC Logo" class="brand-logo" width="166" height="55"/>
+       
+      </a>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'dashboard:home' %}">
+          <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="dash-hero">
+    <div class="container py-4">
+      <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+          <div class="dash-kicker mb-2">
+            <i class="fa-solid fa-file-circle-plus me-2"></i>
+            Business Name Registration
+          </div>
+          <h1 class="h4 fw-bold mb-1">Create a New Application</h1>
+          <p class="text-muted mb-0">
+            Complete the steps below. You can save as draft and continue later.
+          </p>
+        </div>
+
+        <div class="d-flex gap-2">
+          <span class="chip chip-green">
+            <i class="fa-solid fa-circle-check me-1"></i> Step-by-step
+          </span>
+          <span class="chip chip-outline">
+            Ref: <b>Auto-generated</b>
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="py-4">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- Left: Form -->
+        <div class="col-12 col-lg-8">
+          <section class="dash-card p-4 p-md-5">
+            <h2 class="h6 fw-bold mb-3">Application Details</h2>
+
+            <form action="{% url 'applications:start' %}" method="post"  enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+                {% csrf_token %}
+              <!-- Proposed name(s) -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Proposed Business Name (Option 1)</label>
+                <input type="text"  name="proposed_name_1" class="form-control" placeholder="e.g., Green Farms Ventures" required>
+                <div class="invalid-feedback">Please enter a proposed name.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Proposed Business Name (Option 2 - Optional)</label>
+                <input type="text"  name="proposed_name_2" class="form-control" placeholder="e.g., Green Farms Enterprise">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Nature of Business</label>
+                <select class="form-select" name="nature_of_business" required>
+                  <option value="" selected disabled>Select category</option>
+                  <option>Trading</option>
+                  <option>Services</option>
+                  <option>Agriculture</option>
+                  <option>Technology</option>
+                  <option>Education</option>
+                  <option>Transportation</option>
+                  <option>Other</option>
+                </select>
+                <div class="invalid-feedback">Please choose a category.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Business Type</label>
+                <select class="form-select" name="business_type" required>
+                  <option value="" selected disabled>Select business type</option>
+                  <option>Sole Proprietorship</option>
+                  <option>Partnership</option>
+                  <option>Enterprise</option>
+                </select>
+                <div class="invalid-feedback">Please select a business type.</div>
+              </div>
+
+              <!-- Address -->
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">State</label>
+                <input type="text"  name="state" class="form-control" placeholder="e.g., Akwa Ibom" required>
+                <div class="invalid-feedback">State is required.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">LGA</label>
+                <input type="text"  name="lga" class="form-control" placeholder="e.g., Uyo" required>
+                <div class="invalid-feedback">LGA is required.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Business Address</label>
+                <input type="text"  name="business_address" class="form-control" placeholder="Street, City, State" required>
+                <div class="invalid-feedback">Address is required.</div>
+              </div>
+
+              <!-- Owner -->
+              <hr class="my-2">
+
+              <h3 class="h6 fw-bold mb-0">Proprietor / Owner</h3>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">First Name</label>
+                <input type="text" name="owner_first_name" class="form-control" placeholder="Enter first name" required>
+                <div class="invalid-feedback">First name is required.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Last Name</label>
+                <input type="text" name="owner_last_name" class="form-control" placeholder="Enter last name" required>
+                <div class="invalid-feedback">Last name is required.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" name="owner_email" class="form-control" placeholder="name@example.com" required>
+                <div class="invalid-feedback">Valid email is required.</div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label fw-semibold">Phone</label>
+                <input type="tel" name="owner_phone" class="form-control" placeholder="+234..." required>
+                <div class="invalid-feedback">Phone is required.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Business Description (Optional)</label>
+                <textarea class="form-control" name="business_description" rows="3" placeholder="Briefly describe what the business does"></textarea>
+              </div>
+              <!-- Uploads -->
+<hr class="my-2">
+<h3 class="h6 fw-bold mb-0">Uploads</h3>
+<p class="text-muted small mb-2">Upload clear documents. You can replace them later if needed.</p>
+
+<div class="col-12 col-md-6">
+  <label class="form-label fw-semibold">Passport Photograph</label>
+  <input id="passportFile" name="passport" class="form-control" type="file" accept="image/*" required>
+  <div class="form-text">JPEG/PNG. Clear face photo.</div>
+  <div class="invalid-feedback">Passport photograph is required.</div>
+  <div class="preview mt-2" id="passportPreview"></div>
+</div>
+
+<div class="col-12 col-md-6">
+  <label class="form-label fw-semibold">Signature</label>
+  <input id="signatureFile" name="signature" class="form-control" type="file" accept="image/*" required>
+  <div class="form-text">Upload a clear signature image (PNG recommended).</div>
+  <div class="invalid-feedback">Signature is required.</div>
+  <div class="preview mt-2" id="signaturePreview"></div>
+</div>
+
+<div class="col-12">
+  <label class="form-label fw-semibold">NIN Slip</label>
+  <input id="ninFile" name="nin" class="form-control" type="file" accept="image/*,.pdf" required>
+  <div class="form-text">PDF/JPEG/PNG accepted.</div>
+  <div class="invalid-feedback">NIN slip is required.</div>
+  <div class="preview mt-2" id="ninPreview"></div>
+</div>
+
+
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
+                  <label class="form-check-label" for="confirm">
+                    I confirm that the information provided is correct.
+                  </label>
+                  <div class="invalid-feedback">You must confirm before continuing.</div>
+                </div>
+              </div>
+
+              <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
+                <button class="btn btn-primary btn-lg" type="submit">
+                  Submit Application <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+                <input type="hidden" name="save_as_draft" id="saveAsDraft" value="0">
+                <button class="btn btn-outline-primary btn-lg" type="button"  onclick="document.getElementById('saveAsDraft').value='1'; this.closest('form').submit();">
+                  Save Draft
+                </button>
+
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="col-12 col-lg-4">
+          <section class="dash-card p-4">
+            <h2 class="h6 fw-bold mb-2">Application Steps</h2>
+            <div class="steps-list">
+              <div class="step-row active">
+                <span class="step-bullet">1</span>
+                <div>
+                  <div class="fw-semibold">Fill details</div>
+                  <div class="small text-muted">Business + owner info</div>
+                </div>
+              </div>
+              <div class="step-row">
+                <span class="step-bullet">2</span>
+                <div>
+                  <div class="fw-semibold">Review</div>
+                  <div class="small text-muted">Confirm all entries</div>
+                </div>
+              </div>
+              <div class="step-row">
+                <span class="step-bullet">3</span>
+                <div>
+                  <div class="fw-semibold">Payment</div>
+                  <div class="small text-muted">Make payment (later)</div>
+                </div>
+              </div>
+              <div class="step-row">
+                <span class="step-bullet">4</span>
+                <div>
+                  <div class="fw-semibold">Submit</div>
+                  <div class="small text-muted">CAC review begins</div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-3">
+
+            <div class="small text-muted">
+              Tip: If you need to upload Passport/NIN/Signature, do it from your dashboard under <b>Uploads</b>.
+            </div>
+          </section>
+
+          <section class="dash-card p-4 mt-4">
+            <h2 class="h6 fw-bold mb-2">Help</h2>
+            <div class="d-grid gap-2">
+              <a class="btn btn-outline-primary" href="#">FAQs</a>
+              <a class="btn btn-outline-primary" href="#">Contact Support</a>
+            </div>
+          </section>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 small text-muted">
+        <div>© 2026 Corporate Affairs Commission (CAC), Nigeria</div>
+        <div class="d-flex gap-3 flex-wrap">
+          <a class="footer-link" href="#">Privacy Policy</a>
+          <a class="footer-link" href="#">Terms of Use</a>
+          <a class="footer-link" href="#">Contact Us</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Bootstrap validation
+    (() => {
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', (event) => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
+  </script>
+  <script>
+  function previewFile(inputId, previewId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    if (!input || !preview) return;
+
+    input.addEventListener('change', () => {
+      preview.innerHTML = '';
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      // If PDF
+      if (file.type === 'application/pdf') {
+        preview.innerHTML = `
+          <div class="preview-box">
+            <i class="fa-solid fa-file-pdf me-2"></i>
+            <span class="small fw-semibold">PDF selected:</span>
+            <span class="small text-muted ms-1">${file.name}</span>
+          </div>`;
+        return;
+      }
+
+      // If Image
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.className = 'preview-img';
+        img.alt = 'Preview';
+        img.src = URL.createObjectURL(file);
+        preview.appendChild(img);
+
+        const meta = document.createElement('div');
+        meta.className = 'small text-muted mt-1';
+        meta.textContent = file.name;
+        preview.appendChild(meta);
+      }
+    });
+  }
+
+  previewFile('passportFile', 'passportPreview');
+  previewFile('signatureFile', 'signaturePreview');
+  previewFile('ninFile', 'ninPreview');
+</script>
+
+</body>
+</html>

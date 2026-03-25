@@ -69,32 +69,41 @@
               <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
               <div>
                 <div class="small text-muted">Pending</div>
-                <div class="fw-bold fs-5">2</div>
+                <div class="fw-bold fs-5" id="stat-pending">0</div>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
               <div>
                 <div class="small text-muted">Queried</div>
-                <div class="fw-bold fs-5">1</div>
+              <div class="fw-bold fs-5" id="stat-queried">0</div>
               </div>
             </div>
             <div class="stat-card">
               <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
               <div>
                 <div class="small text-muted">Approved</div>
-                <div class="fw-bold fs-5">1</div>
+                <div class="fw-bold fs-5" id="stat-approved">0</div>
               </div>
             </div>
           </div>
           <div class="small text-muted mt-2">
-            (These numbers are demo — you’ll replace with real data later.)
+          
           </div>
         </div>
       </div>
     </div>
   </header>
-
+      {% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
   <main class="py-4">
   <div class="container">
     <div class="row g-4">
@@ -136,7 +145,7 @@
             </div>
 
             <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
-              <a class="btn btn-primary btn-lg" href="new-application.html">
+              <a class="btn btn-primary btn-lg" href="{% url 'applications:start' %}">
                 Start New Application <i class="fa-solid fa-arrow-right ms-2"></i>
               </a>
 
@@ -180,40 +189,10 @@
                   <th class="text-end">Action</th>
                 </tr>
               </thead>
-              <tbody>
+             <tbody id="appsTbody">
                 <tr>
-                  <td class="fw-semibold">BN-2026-00021</td>
-                  <td>Green Farms Ventures</td>
-                  <td>Jan 12, 2026</td>
-                  <td><span class="status-pill status-pending">Pending</span></td>
-                  <td class="text-end">
-                    <button class="btn btn-outline-secondary btn-sm" type="button" disabled>
-                      Awaiting Review
-                    </button>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="fw-semibold">BN-2026-00018</td>
-                  <td>Bright Spark Services</td>
-                  <td>Jan 09, 2026</td>
-                  <td><span class="status-pill status-queried">Queried</span></td>
-                  <td class="text-end">
-                    <a class="btn btn-primary btn-sm" href="modify-application.html">
-                      Modify Application <i class="fa-solid fa-pen-to-square ms-1"></i>
-                    </a>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td class="fw-semibold">BN-2026-00011</td>
-                  <td>Emerald Digital Hub</td>
-                  <td>Jan 03, 2026</td>
-                  <td><span class="status-pill status-approved">Approved</span></td>
-                  <td class="text-end">
-                    <a class="btn btn-outline-primary btn-sm" href="certificate.pdf" download>
-                      Download Certificate <i class="fa-solid fa-download ms-1"></i>
-                    </a>
+                  <td colspan="5" class="text-muted text-center">
+                 No applications yet.
                   </td>
                 </tr>
               </tbody>
@@ -299,6 +278,90 @@
       });
     })();
   </script>
+
+  <script>
+  function getStatusClass(status) {
+    switch(status) {
+      case 'pending': return 'status-pill status-pending';
+      case 'queried': return 'status-pill status-queried';
+      case 'approved': return 'status-pill status-approved';
+      default: return '';
+    }
+  }
+
+  function getActionButton(app) {
+    if (app.status === 'pending') {
+      return `<button class="btn btn-outline-secondary btn-sm" disabled>Awaiting Review</button>`;
+    } else if (app.status === 'queried') {
+      return `<a class="btn btn-primary btn-sm" href="/applications/${app.id}/edit">
+                Modify Application <i class="fa-solid fa-pen-to-square ms-1"></i>
+              </a>`;
+    } else if (app.status === 'approved') {
+      return `<a class="btn btn-outline-primary btn-sm" href="/applications/${app.id}/certificate" download>
+                Download Certificate <i class="fa-solid fa-download ms-1"></i>
+              </a>`;
+    }
+    return '';
+  }
+
+  function updateStats(applications) {
+    document.getElementById("stat-pending").textContent =
+      applications.filter(a => a.status === 'pending').length;
+    document.getElementById("stat-queried").textContent =
+      applications.filter(a => a.status === 'queried').length;
+    document.getElementById("stat-approved").textContent =
+      applications.filter(a => a.status === 'approved').length;
+  }
+
+  async function loadApplications() {
+    try {
+      const res = await fetch("{% url 'applications:api_mine' %}");
+      const data = await res.json();
+      const tbody = document.getElementById("appsTbody");
+
+      updateStats(data.applications);
+
+      if (!data.applications.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center text-muted">
+              No applications yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = data.applications.map(app => `
+        <tr>
+          <td class="fw-semibold">${app.reference_id}</td>
+          <td>${app.business_name}</td>
+          <td>${new Date(app.created_at).toLocaleDateString()}</td>
+          <td><span class="${getStatusClass(app.status)}">${app.status_label}</span></td>
+          <td class="text-end">${getActionButton(app)}</td>
+        </tr>
+       ${app.status === 'queried' && app.agent_note ? `
+  <tr>
+    <td colspan="5">
+      <div class="alert alert-danger mb-2">
+        <strong>⚠️ Correction Required:</strong><br>
+        ${app.agent_note}
+      </div>
+    </td>
+  </tr>
+` : ''}
+      `).join("");
+    } catch (error) {
+      console.error("Error loading applications:", error);
+    }
+  }
+
+  // Initial load
+  loadApplications();
+  // Refresh every 5 seconds to reflect new submissions
+  setInterval(loadApplications, 5000);
+</script>
+
 
 </body>
 </html>
