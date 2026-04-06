@@ -41,7 +41,7 @@
 
         <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
           <div class="dash-user small text-muted d-none d-lg-inline">
-            <i class="fa-solid fa-user me-1"></i> Welcome, <span class="fw-semibold">User</span>
+            <i class="fa-solid fa-user me-1"></i> Welcome, {{ request.user.first_name }}
           </div>
           <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'frontend:home' %}">Logout</a>
         </div>
@@ -293,11 +293,16 @@
     if (app.status === 'pending') {
       return `<button class="btn btn-outline-secondary btn-sm" disabled>Awaiting Review</button>`;
     } else if (app.status === 'queried') {
-      return `<a class="btn btn-primary btn-sm" href="/applications/${app.id}/edit">
+      return `<a class="btn btn-primary btn-sm" href="/applications/modify/${app.reference_id}/">
                 Modify Application <i class="fa-solid fa-pen-to-square ms-1"></i>
               </a>`;
     } else if (app.status === 'approved') {
-      return `<a class="btn btn-outline-primary btn-sm" href="/applications/${app.id}/certificate" download>
+      return `  <a class="btn btn-outline-success btn-sm me-2" 
+       href="/applications/certificate/view/${app.reference_id}/" target="_blank">
+       👁 View Certificate <i class="fa-solid fa-eye ms-1"></i>
+    </a>
+
+      <a class="btn btn-outline-primary btn-sm" href="/applications/certificate/${app.reference_id}">
                 Download Certificate <i class="fa-solid fa-download ms-1"></i>
               </a>`;
     }

@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CAC Certificate</title>
+  <link rel="stylesheet" href="{% static 'css/certificate.css' %}">
+</head>
+<body>
+
+<div class="certificate">
+   <!-- WATERMARK -->
+  <div class="watermark">CAC</div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="{% static 'images/arm.png' %}" alt="Coat of Arms" class="coat-of-arms" width="70" height="">
+    <h5>FEDERAL REPUBLIC OF NIGERIA</h5>
+    <h3>CERTIFICATE OF REGISTRATION</h3>
+    <h4 class="sub">BUSINESS NAME REGISTRATION NO.{{ application.registration_number }}</h4>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+    <h6 class="general">THE REGISTRAR - GENERAL OF CORPORATE AFFAIRS COMMISSION</h6>
+
+    <p class="certify"> hereby certifies that</p>
+
+    <h1 class="business-name">
+      {{application.proposed_name_1}}
+    </h1>
+
+    <p class="day">
+      is this day registered as a business name under the
+    </p>
+
+    <p class="law">
+      COMPANIES AND ALLIED MATTERS ACT 2020
+    </p>
+
+    <p class="italic">The general nature of business is:</p>
+
+    <p class="bold">{{application.nature_of_business}}</p>
+
+    <p class="italics">
+      The address of the principal place of business is:
+    </p>
+
+    <h5 class="line">{{application.business_address}},{{application.lga}},{{application.state}}</h5>
+
+    <h5 class="given">Given under my hand at Abuja this {{ application.approved_at|date:"jS" }} day of {{ application.approved_at|date:"F" }}, {{ application.approved_at|date:"Y" }}</h5>
+       
+    <img src="{% static 'images/watermark.png' %}" alt="Watermark" class="watermark-bg" width="142">
+    
+  </div>
+ <!-- QR CODE AREA -->
+  <!-- <div class="qr-section">
+    <div class="qr-box">
+        {% if application.qr_code %}
+            <img src="{{ application.qr_code.url }}" alt="QR Code" class="qr-code" width="100"  object-fit="contain">
+        {% endif %}
+    </div> -->
+     {% if application.qr_code %}
+            <img src="{{ application.qr_code.url }}" alt="QR Code" class="qr-code" object_fit="contain">
+        {% endif %}
+    <img src="{% static 'images/sign.png' %}" alt="registrar's signature" class="signature" >
+  
+      
+     
+
+
+  </div>
+ 
+
+ 
+
+</body>
+</html>

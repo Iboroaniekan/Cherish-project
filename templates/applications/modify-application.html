@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Application | iCRP</title>
+  <title>Modify Application | iCRP</title>
 
   <!-- Bootstrap CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
   <!-- Your theme -->
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}  ">
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
   <link rel="stylesheet" href="{% static 'css/application.css' %}">
 </head>
@@ -25,7 +25,6 @@
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'dashboard:home' %}">
         <img src="{% static 'images/logo.png' %}" alt="CAC Logo" class="brand-logo" width="166" height="55"/>
-       
       </a>
 
       <div class="d-flex gap-2">
@@ -42,22 +41,22 @@
       <div class="d-flex align-items-start justify-content-between flex-wrap gap-2">
         <div>
           <div class="dash-kicker mb-2">
-            <i class="fa-solid fa-file-circle-plus me-2"></i>
-            Business Name Registration
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            Query Response Required
           </div>
-          <h1 class="h4 fw-bold mb-1">Create a New Application</h1>
+          <h1 class="h4 fw-bold mb-1">Modify Queried Application</h1>
           <p class="text-muted mb-0">
-            Complete the steps below. You can save as draft and continue later.
+            Reference: <b>{{app.reference_id}}</b> • Status: <span class="status-pill status-queried">{{ app.get_status_display }}</span>
           </p>
         </div>
 
         <div class="d-flex gap-2">
-          <span class="chip chip-green">
-            <i class="fa-solid fa-circle-check me-1"></i> Step-by-step
-          </span>
-          <span class="chip chip-outline">
-            Ref: <b>Auto-generated</b>
-          </span>
+          <a class="btn btn-outline-primary btn-sm" href="{% url 'dashboard:home' %}">
+            View Submitted Details
+          </a>
+          <a class="btn btn-primary btn-sm" href="#edit">
+            Go to Edit <i class="fa-solid fa-pen-to-square ms-1"></i>
+          </a>
         </div>
       </div>
     </div>
@@ -67,111 +66,126 @@
     <div class="container">
       <div class="row g-4">
 
-        <!-- Left: Form -->
+        <!-- Left: Query notes + form -->
         <div class="col-12 col-lg-8">
+
+          <!-- Query Notes -->
           <section class="dash-card p-4 p-md-5">
-            <h2 class="h6 fw-bold mb-3">Application Details</h2>
+            <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+              <h2 class="h6 fw-bold mb-0">Query Notes (What to correct)</h2>
+              <span class="chip chip-outline">
+                <i class="fa-solid fa-circle-info me-1"></i> CAC Review
+              </span>
+            </div>
 
-            <form action="{% url 'applications:start' %}" method="post"  enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
-                {% csrf_token %}
-              <!-- Proposed name(s) -->
-              <div class="col-12">
-                <label class="form-label fw-semibold">Proposed Business Name (Option 1)</label>
-                <input type="text"  name="proposed_name_1" class="form-control" placeholder="e.g., Green Farms Ventures" required style="text-transform: uppercase;">
-                <div class="invalid-feedback">Please enter a proposed name.</div>
-              </div>
+            <div class="alert alert-warning mb-0">
+              <div class="fw-semibold mb-1">Issues found:</div>
+              <ul class="mb-0">
+                <li>{{ app.agent_note }}</li>
+  
+              </ul>
+            </div>
 
+            <div class="small text-muted mt-3">
+              After fixing, click <b>Resubmit</b>. Your application will return to <b>Pending</b> for review.
+            </div>
+          </section>
+
+          <!-- Edit form -->
+          <section id="edit" class="dash-card p-4 p-md-5 mt-4">
+            <h2 class="h6 fw-bold mb-3">Edit Application Details</h2>
+
+            <form method="post" enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
+              {% csrf_token %}
               <div class="col-12">
-                <label class="form-label fw-semibold">Proposed Business Name (Option 2 - Optional)</label>
-                <input type="text"  name="proposed_name_2" class="form-control" placeholder="e.g., Green Farms Enterprise" style="text-transform: uppercase;">
+                <label class="form-label fw-semibold">Proposed Business Name</label>
+                <input type="text" name="proposed_name_1" class="form-control" value="{{ app.proposed_name_1 }}" required>
+                <div class="invalid-feedback">Business name is required.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">Nature of Business</label>
                 <select class="form-select" name="nature_of_business" required>
-                  <option value="" selected disabled>Select category</option>
-                  <option>TRADING</option>
-                  <option>SERVICES</option>
-                  <option>AGRICULTURE</option>
-                  <option>TECHNOLOGY</option>
-                  <option>EDUCATION</option>
-                  <option>TRANSPORTATION</option>
-                  <option>OTHER</option>
+                  <option value="Trading" {% if app.nature_of_business == "Trading" %}selected{% endif %}>Trading</option>
+                  <option value="Services" {% if app.nature_of_business == "Services" %}selected{% endif %}>Services</option>
+                  <option value="Agriculture" {% if app.nature_of_business == "Agriculture" %}selected{% endif %}>Agriculture</option>
+                  <option value="Technology" {% if app.nature_of_business == "Technology" %}selected{% endif %}>Technology</option>
+                  <option value="Education" {% if app.nature_of_business == "Education" %}selected{% endif %}>Education</option>
+                  <option value="Other" {% if app.nature_of_business == "Other" %}selected{% endif %}>Other</option>
                 </select>
-                <div class="invalid-feedback">Please choose a category.</div>
+                <div class="invalid-feedback">Please select a category.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">Business Type</label>
                 <select class="form-select" name="business_type" required>
-                  <option value="" selected disabled>Select business type</option>
-                  <option>Sole Proprietorship</option>
-                  <option>Partnership</option>
-                  <option>Enterprise</option>
+                  <option value="Sole Proprietorship" {% if app.business_type == "Sole Proprietorship" %}selected{% endif %}>Sole Proprietorship</option>
+                  <option value="Partnership" {% if app.business_type == "Partnership" %}selected{% endif %}>Partnership</option>
+                  <option value="Enterprise" {% if app.business_type == "Enterprise" %}selected{% endif %}>Enterprise</option>
                 </select>
-                <div class="invalid-feedback">Please select a business type.</div>
+                <div class="invalid-feedback">Please select business type.</div>
               </div>
 
-              <!-- Address -->
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">State</label>
-                <input type="text"  name="state" class="form-control" placeholder="e.g., Akwa Ibom" required style="text-transform: uppercase;">
+                <input type="text" name="state" class="form-control" value="{{ app.state }}" required>
                 <div class="invalid-feedback">State is required.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">LGA</label>
-                <input type="text"  name="lga" class="form-control" placeholder="e.g., Uyo" required style="text-transform: uppercase;">
+                <input type="text" name="lga" class="form-control" value="{{ app.lga }}" required>
                 <div class="invalid-feedback">LGA is required.</div>
               </div>
 
               <div class="col-12">
                 <label class="form-label fw-semibold">Business Address</label>
-                <input type="text"  name="business_address" class="form-control" placeholder="Street, City, State" style="text-transform: uppercase;">
+                <input type="text" name="business_address" class="form-control" value="{{ app.business_address }}" required>
                 <div class="invalid-feedback">Address is required.</div>
               </div>
 
-              <!-- Owner -->
+              <div class="col-12">
+                <label class="form-label fw-semibold">Business Description</label>
+                <textarea class="form-control" rows="3" name="business_description" required>{{ app.business_description }}</textarea>
+                <div class="invalid-feedback">Please provide a clear description.</div>
+              </div>
+
               <hr class="my-2">
 
               <h3 class="h6 fw-bold mb-0">Proprietor / Owner</h3>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">First Name</label>
-                <input type="text" name="owner_first_name" class="form-control" placeholder="Enter first name" style="text-transform: uppercase;">
+                <input type="text" name="owner_first_name" class="form-control" value="{{app.owner_first_name}}" required>
                 <div class="invalid-feedback">First name is required.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">Last Name</label>
-                <input type="text" name="owner_last_name" class="form-control" placeholder="Enter last name" required style="text-transform: uppercase;">
+                <input type="text" name="owner_last_name" class="form-control" value="{{app.owner_last_name}}" required>
                 <div class="invalid-feedback">Last name is required.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">Email</label>
-                <input type="email" name="owner_email" class="form-control" placeholder="name@example.com" required>
+                <input type="email" name="owner_email" class="form-control" value="{{app.owner_email}}" required>
                 <div class="invalid-feedback">Valid email is required.</div>
               </div>
 
               <div class="col-12 col-md-6">
                 <label class="form-label fw-semibold">Phone</label>
-                <input type="tel" name="owner_phone" class="form-control" placeholder="+234..." required>
-                <div class="invalid-feedback">Phone is required.</div>
+                <input type="tel" name="owner_phone" class="form-control" value="{{app.owner_phone}}" required>
+                <div class="invalid-feedback">Phone is required (use +234 format).</div>
               </div>
 
-              <div class="col-12">
-                <label class="form-label fw-semibold">Business Description (Optional)</label>
-                <textarea class="form-control" name="business_description" rows="3" placeholder="Briefly describe what the business does" ></textarea>
-              </div>
-              <!-- Uploads -->
+         <!-- Uploads -->
 <hr class="my-2">
 <h3 class="h6 fw-bold mb-0">Uploads</h3>
 <p class="text-muted small mb-2">Upload clear documents. You can replace them later if needed.</p>
 
 <div class="col-12 col-md-6">
   <label class="form-label fw-semibold">Passport Photograph</label>
-  <input id="passportFile" name="passport" class="form-control" type="file" accept="image/*" required>
+  <input id="passportFile" name="passport" class="form-control" type="file" accept="image/*">
   <div class="form-text">JPEG/PNG. Clear face photo.</div>
   <div class="invalid-feedback">Passport photograph is required.</div>
   <div class="preview mt-2" id="passportPreview"></div>
@@ -179,7 +193,7 @@
 
 <div class="col-12 col-md-6">
   <label class="form-label fw-semibold">Signature</label>
-  <input id="signatureFile" name="signature" class="form-control" type="file" accept="image/*" required>
+  <input id="signatureFile" name="signature" class="form-control" type="file" accept="image/*">
   <div class="form-text">Upload a clear signature image (PNG recommended).</div>
   <div class="invalid-feedback">Signature is required.</div>
   <div class="preview mt-2" id="signaturePreview"></div>
@@ -187,84 +201,77 @@
 
 <div class="col-12">
   <label class="form-label fw-semibold">NIN Slip</label>
-  <input id="ninFile" name="nin" class="form-control" type="file" accept="image/*,.pdf" required>
+  <input id="ninFile" name="nin" class="form-control" type="file" accept="image/*,.pdf">
   <div class="form-text">PDF/JPEG/PNG accepted.</div>
   <div class="invalid-feedback">NIN slip is required.</div>
   <div class="preview mt-2" id="ninPreview"></div>
 </div>
 
 
-              <div class="col-12">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="confirm" name="confirm" required>
-                  <label class="form-check-label" for="confirm">
-                    I confirm that the information provided is correct.
-                  </label>
-                  <div class="invalid-feedback">You must confirm before continuing.</div>
-                </div>
-              </div>
-
               <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
                 <button class="btn btn-primary btn-lg" type="submit">
-                  Submit Application <i class="fa-solid fa-arrow-right ms-2"></i>
+                  Resubmit <i class="fa-solid fa-paper-plane ms-2"></i>
                 </button>
-                <input type="hidden" name="save_as_draft" id="saveAsDraft" value="0">
-                <button class="btn btn-outline-primary btn-lg" type="button"  onclick="document.getElementById('saveAsDraft').value='1'; this.closest('form').submit();">
-                  Save Draft
+                <button class="btn btn-outline-primary btn-lg" type="submit" name="save_as_draft" value="1">
+                  Save Changes
                 </button>
-
               </div>
+
             </form>
           </section>
         </div>
 
-        <!-- Right: Sidebar -->
+        <!-- Right: Summary -->
         <div class="col-12 col-lg-4">
           <section class="dash-card p-4">
-            <h2 class="h6 fw-bold mb-2">Application Steps</h2>
-            <div class="steps-list">
-              <div class="step-row active">
-                <span class="step-bullet">1</span>
-                <div>
-                  <div class="fw-semibold">Fill details</div>
-                  <div class="small text-muted">Business + owner info</div>
-                </div>
-              </div>
-              <div class="step-row">
-                <span class="step-bullet">2</span>
-                <div>
-                  <div class="fw-semibold">Review</div>
-                  <div class="small text-muted">Confirm all entries</div>
-                </div>
-              </div>
-              <div class="step-row">
-                <span class="step-bullet">3</span>
-                <div>
-                  <div class="fw-semibold">Payment</div>
-                  <div class="small text-muted">Make payment (later)</div>
-                </div>
-              </div>
-              <div class="step-row">
-                <span class="step-bullet">4</span>
-                <div>
-                  <div class="fw-semibold">Submit</div>
-                  <div class="small text-muted">CAC review begins</div>
-                </div>
-              </div>
+            <h2 class="h6 fw-bold mb-2">Application Summary</h2>
+
+            <div class="summary-row">
+              <span class="text-muted small">Reference</span>
+              <span class="fw-semibold">{{app.reference_id}}</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="text-muted small">Status</span>
+              <span class="status-pill status-queried">{{app.status}}</span>
+            </div>
+
+            <div class="summary-row">
+              <span class="text-muted small">Last Updated</span>
+              <span class="fw-semibold">{{app.updated_at}}</span>
             </div>
 
             <hr class="my-3">
 
             <div class="small text-muted">
-              Tip: If you need to upload Passport/NIN/Signature, do it from your dashboard under <b>Uploads</b>.
+              Make sure all queried fields are corrected before resubmitting.
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+              <a class="btn btn-outline-primary" href="{% url 'applications:start' %}">
+                Start New Application
+              </a>
+              <a class="btn btn-outline-primary" href="{% url 'dashboard:home' %}">
+                Back to Dashboard
+              </a>
             </div>
           </section>
 
           <section class="dash-card p-4 mt-4">
-            <h2 class="h6 fw-bold mb-2">Help</h2>
-            <div class="d-grid gap-2">
-              <a class="btn btn-outline-primary" href="#">FAQs</a>
-              <a class="btn btn-outline-primary" href="#">Contact Support</a>
+            <h2 class="h6 fw-bold mb-2">Status Guide</h2>
+            <div class="status-guide">
+              <div class="sg-item">
+                <span class="status-pill status-pending">Pending</span>
+                <span class="small text-muted">Under review</span>
+              </div>
+              <div class="sg-item">
+                <span class="status-pill status-queried">Queried</span>
+                <span class="small text-muted">Needs correction</span>
+              </div>
+              <div class="sg-item">
+                <span class="status-pill status-approved">Approved</span>
+                <span class="small text-muted">Certificate ready</span>
+              </div>
             </div>
           </section>
         </div>

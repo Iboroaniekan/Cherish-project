@@ -257,15 +257,15 @@
 
             <hr class="my-4" />
 
-            <form class="row g-2 align-items-center">
+            <form class="row g-2 align-items-center" method="get" action="{% url 'applications:public_search' %}">
               <div class="col-12">
                 <label class="form-label small text-muted mb-1" id="search" >Quick Public Search</label>
               </div>
               <div class="col-12 col-md-8">
-                <input class="form-control" type="text" id="searchs" placeholder="Search by RC Number, AV Code, or Approved Name" />
+                <input class="form-control" type="text" id="searchs" name="registration_number" placeholder="Search by RC Number, AV Code, or Approved Name" value="{{search_query|default:"" }}"/>
               </div>
               <div class="col-12 col-md-4 d-grid">
-                <button class="btn btn-primary" type="button">
+                <button class="btn btn-primary" type="submit">
                   Search <i class="fa-solid fa-magnifying-glass ms-2"></i>
                 </button>
               </div>
@@ -275,6 +275,26 @@
                 </div>
               </div>
             </form>
+            {% if search_query %}
+<div class="mt-3 p-3 border rounded text-center">
+  {% if application and valid %}
+    <div class="text-success mb-3 fs-5 fw-bold">
+      ✅ Certificate Verified
+    </div>
+
+    <!-- View Certificate Button -->
+    <a href="{% url 'applications:view_certificate' application.reference_id %}" 
+       class="btn btn-primary" target="_blank">
+       View Certificate
+    </a>
+
+  {% else %}
+    <div class="text-danger fs-5 fw-bold">
+      ❌ Invalid Certificate
+    </div>
+  {% endif %}
+</div>
+{% endif %}
 
           </div>
         </div>
