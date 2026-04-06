@@ -297,12 +297,12 @@
                 Modify Application <i class="fa-solid fa-pen-to-square ms-1"></i>
               </a>`;
     } else if (app.status === 'approved') {
-      return `  <a class="btn btn-outline-success btn-sm me-2" 
+      return `  <a class="btn btn-outline-success btn-sm" 
        href="/applications/certificate/view/${app.reference_id}/" target="_blank">
        👁 View Certificate <i class="fa-solid fa-eye ms-1"></i>
     </a>
 
-      <a class="btn btn-outline-primary btn-sm" href="/applications/certificate/${app.reference_id}">
+      <a class="btn btn-outline-primary btn-sm mt-2" href="/applications/certificate/${app.reference_id}">
                 Download Certificate <i class="fa-solid fa-download ms-1"></i>
               </a>`;
     }
