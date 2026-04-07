@@ -27,6 +27,8 @@ SECRET_KEY = 'django-insecure-!2s5#^+4$#p4%7!2t^9#(jsh*#o0r@dyasu*dg)bm=3^5are09
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# log out admin dashboard redirect to my homepage
+LOGOUT_REDIRECT_URL = '/'
 
 SITE_URL = 'http://localhost:8000'
 # Application definition
