@@ -10,6 +10,7 @@ import os
 from io import BytesIO
 from django.core.files import File
 from django.core.files.base import ContentFile
+from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from weasyprint import HTML 
 from django.templatetags.static import static
@@ -32,6 +33,27 @@ def qr_upload_path(instance, filename):
 
 def certificate_upload_path(instance, filename):
     return upload_path(instance, "certificate", filename)
+
+def validate_pdf_size(file):
+    max_size = 5 * 1024 * 1024  # 5 MB
+
+    if file.size > max_size:
+        raise ValidationError(
+            "NIN document must not exceed 5MB."
+        )
+
+    if not file.name.lower().endswith(".pdf"):
+        raise ValidationError(
+            "Only PDF files are allowed."
+        )
+
+def validate_image_size(image):
+    max_size = 2 * 1024 * 1024  # 2 MB
+
+    if image.size > max_size:
+        raise ValidationError(
+            "Image must not exceed 2MB."
+        )
 
 # details that are saved in the database
 class Application(models.Model):
@@ -66,9 +88,12 @@ class Application(models.Model):
     digital_signature = models.CharField(max_length=64, blank=True, null=True)
     business_description = models.TextField(blank=True)
 
-    passport = models.ImageField(upload_to=passport_upload_path)
-    signature = models.ImageField(upload_to=signature_upload_path)
-    nin = models.FileField(upload_to=nin_upload_path)
+    passport = models.ImageField(upload_to=passport_upload_path,validators=[validate_image_size],
+)
+    signature = models.ImageField(upload_to=signature_upload_path,validators=[validate_image_size],
+)
+    nin = models.FileField(upload_to=nin_upload_path,validators=[validate_pdf_size],
+)
     certificate = models.FileField( upload_to=certificate_upload_path,null=True, blank=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.SUBMITTED)
     agent_note = models.TextField(blank=True)  # active CAC query
