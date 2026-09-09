@@ -1,0 +1,774 @@
+{% load static %}
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Payment Status | iCRP</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body class="dash-body">
+
+  <!-- NAVBAR -->
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+
+
+  <a class="navbar-brand d-flex align-items-center gap-2"
+     href="{% url 'frontend:home' %}">
+    <img
+      src="{% static 'images/logo.png' %}"
+      alt="CAC Logo"
+      class="brand-logo"
+      width="164"
+      height="55"
+    />
+  </a>
+
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#dashNav"
+    aria-controls="dashNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div id="dashNav" class="collapse navbar-collapse">
+
+    <ul class="navbar-nav mx-lg-auto mt-3 mt-lg-0 gap-lg-2">
+
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          href="{% url 'applications:name_reservation' %}"
+        >
+          <i class="fa-solid fa-magnifying-glass me-1"></i>
+          Name Reservation
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          href="{% url 'dashboard:home' %}"
+        >
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          href="{% url 'applications:start' %}"
+        >
+          Register Business
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          href="{% url 'accounts:logout' %}"
+        >
+          Logout
+        </a>
+      </li>
+
+    </ul>
+
+    <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+      <div class="dash-user small text-muted d-none d-lg-inline">
+        <i class="fa-solid fa-user me-1"></i>
+        Welcome, {{ request.user.first_name }}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+  </nav>
+
+  <!-- PAGE HEADER -->
+
+  <header class="dash-hero">
+    <div class="container py-4 py-lg-5">
+
+
+  <div class="row align-items-center">
+
+    <div class="col-lg-8">
+
+      <div class="dash-kicker mb-2">
+        <i class="fa-solid fa-credit-card me-2"></i>
+        Corporate Affairs Commission
+      </div>
+
+      <h1 class="h3 fw-bold mb-2">
+        Reservation Payment Status
+      </h1>
+
+      <p class="text-muted mb-0">
+        View the current status of your business name reservation payment.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+  </header>
+
+  <!-- MAIN CONTENT -->
+
+  <main class="py-5">
+
+
+<div class="container">
+
+  <div class="row justify-content-center">
+
+    <div class="col-12 col-lg-8">
+
+      <!-- DJANGO MESSAGES -->
+      {% if messages %}
+        {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+
+          </div>
+        {% endfor %}
+      {% endif %}
+
+
+      <!-- PAYMENT STATUS CARD -->
+      <section class="dash-card p-4 p-md-5">
+
+        <!-- STATUS ICON -->
+
+        {% if payment.status == "confirmed" %}
+
+          <div class="text-center mb-4">
+
+            <div
+              class="mini-icon mx-auto mb-3"
+              style="background:#d1e7dd; color:#198754;"
+            >
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <h2 class="h4 fw-bold text-success mb-2">
+              Payment Confirmed
+            </h2>
+
+            <p class="text-muted mb-0">
+              Your reservation payment has been confirmed by CAC staff.
+            </p>
+
+          </div>
+
+        {% elif payment.status == "submitted" %}
+
+          <div class="text-center mb-4">
+
+            <div
+              class="mini-icon mx-auto mb-3"
+              style="background:#fff3cd; color:#856404;"
+            >
+              <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <h2 class="h4 fw-bold text-warning mb-2">
+              Awaiting Staff Confirmation
+            </h2>
+
+            <p class="text-muted mb-0">
+              Your payment has been submitted successfully and is
+              currently awaiting confirmation by CAC staff.
+            </p>
+
+          </div>
+
+        {% elif payment.status == "pending" %}
+
+          <div class="text-center mb-4">
+
+            <div
+              class="mini-icon mx-auto mb-3"
+              style="background:#e2e3e5; color:#495057;"
+            >
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+
+            <h2 class="h4 fw-bold text-secondary mb-2">
+              Payment Pending
+            </h2>
+
+            <p class="text-muted mb-0">
+              Your payment has not yet been submitted for confirmation.
+            </p>
+
+          </div>
+
+        {% elif payment.status == "failed" %}
+
+          <div class="text-center mb-4">
+
+            <div
+              class="mini-icon mx-auto mb-3"
+              style="background:#f8d7da; color:#dc3545;"
+            >
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+
+            <h2 class="h4 fw-bold text-danger mb-2">
+              Payment Failed
+            </h2>
+
+            <p class="text-muted mb-0">
+              Your payment could not be confirmed. Please contact CAC
+              support or follow the available payment instructions.
+            </p>
+
+          </div>
+
+        {% endif %}
+
+
+        <hr class="my-4">
+
+
+        <!-- RESERVATION INFORMATION -->
+
+        <h3 class="h6 fw-bold mb-3">
+          <i class="fa-solid fa-building me-2"></i>
+          Reservation Information
+        </h3>
+
+        <div class="border rounded p-4 mb-4">
+
+          <div class="row g-4">
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Reservation Reference
+              </div>
+
+              <div class="fw-bold">
+                {{ reservation.reference_id }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Proposed Business Name
+              </div>
+
+              <div class="fw-bold">
+                {{ reservation.proposed_name }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Reservation Fee
+              </div>
+
+              <div class="fw-bold">
+                ₦{{ reservation.reservation_fee|floatformat:2 }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Reservation Status
+              </div>
+
+              {% if reservation.status == "reserved" %}
+
+                <span class="badge bg-success">
+                  <i class="fa-solid fa-circle-check me-1"></i>
+                  Officially Reserved
+                </span>
+
+              {% elif reservation.status == "payment_submitted" %}
+
+                <span class="badge bg-warning text-dark">
+                  <i class="fa-solid fa-clock me-1"></i>
+                  Awaiting Payment Confirmation
+                </span>
+
+              {% elif reservation.status == "awaiting_payment" %}
+
+                <span class="badge bg-secondary">
+                  <i class="fa-solid fa-hourglass-half me-1"></i>
+                  Awaiting Payment
+                </span>
+
+              {% elif reservation.status == "rejected" %}
+
+                <span class="badge bg-danger">
+                  <i class="fa-solid fa-circle-xmark me-1"></i>
+                  Rejected
+                </span>
+
+              {% elif reservation.status == "expired" %}
+
+                <span class="badge bg-dark">
+                  <i class="fa-solid fa-calendar-xmark me-1"></i>
+                  Expired
+                </span>
+
+              {% endif %}
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- PAYMENT INFORMATION -->
+
+        <h3 class="h6 fw-bold mb-3">
+          <i class="fa-solid fa-receipt me-2"></i>
+          Payment Information
+        </h3>
+
+        <div class="border rounded p-4 mb-4">
+
+          <div class="row g-4">
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Payment Reference
+              </div>
+
+              <div class="fw-semibold">
+                {{ payment.payment_reference }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Amount
+              </div>
+
+              <div class="fw-bold">
+                ₦{{ payment.amount|floatformat:2 }}
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Payment Type
+              </div>
+
+              <div class="fw-semibold">
+                Name Reservation
+              </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+              <div class="small text-muted mb-1">
+                Payment Status
+              </div>
+
+              {% if payment.status == "confirmed" %}
+
+                <span class="badge bg-success">
+                  Confirmed
+                </span>
+
+              {% elif payment.status == "submitted" %}
+
+                <span class="badge bg-warning text-dark">
+                  Awaiting Confirmation
+                </span>
+
+              {% elif payment.status == "pending" %}
+
+                <span class="badge bg-secondary">
+                  Pending
+                </span>
+
+              {% elif payment.status == "failed" %}
+
+                <span class="badge bg-danger">
+                  Failed
+                </span>
+
+              {% endif %}
+
+            </div>
+
+
+            {% if payment.submitted_at %}
+
+              <div class="col-md-6">
+
+                <div class="small text-muted mb-1">
+                  Payment Submitted
+                </div>
+
+                <div class="fw-semibold">
+                  {{ payment.submitted_at|date:"d M Y, h:i A" }}
+                </div>
+
+              </div>
+
+            {% endif %}
+
+
+            {% if payment.confirmed_at %}
+
+              <div class="col-md-6">
+
+                <div class="small text-muted mb-1">
+                  Payment Confirmed
+                </div>
+
+                <div class="fw-semibold text-success">
+                  {{ payment.confirmed_at|date:"d M Y, h:i A" }}
+                </div>
+
+              </div>
+
+            {% endif %}
+
+          </div>
+
+        </div>
+
+
+        <!-- STATUS MESSAGE -->
+
+        {% if payment.status == "submitted" %}
+
+          <div class="alert alert-warning">
+
+            <div class="d-flex align-items-start">
+
+              <i class="fa-solid fa-clock fs-4 me-3"></i>
+
+              <div>
+
+                <h5 class="alert-heading fw-bold">
+                  Awaiting Staff Confirmation
+                </h5>
+
+                <p class="mb-0">
+                  Your payment has been submitted successfully.
+                  CAC staff will review and confirm the payment.
+                  Your business name is <strong>not officially reserved yet</strong>.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        {% elif payment.status == "confirmed" %}
+
+          <div class="alert alert-success">
+
+            <div class="d-flex align-items-start">
+
+              <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+
+              <div>
+
+                <h5 class="alert-heading fw-bold">
+                  Your Name Is Officially Reserved
+                </h5>
+
+                <p class="mb-0">
+                  Your payment has been confirmed by CAC staff.
+                  <strong>{{ reservation.proposed_name }}</strong>
+                  is now officially reserved for you.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        {% elif payment.status == "failed" %}
+
+          <div class="alert alert-danger">
+
+            <div class="d-flex align-items-start">
+
+              <i class="fa-solid fa-circle-xmark fs-4 me-3"></i>
+
+              <div>
+
+                <h5 class="alert-heading fw-bold">
+                  Payment Not Confirmed
+                </h5>
+
+                <p class="mb-0">
+                  Your payment could not be confirmed.
+                  Please contact CAC staff for assistance.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        {% endif %}
+
+
+        <!-- ACTIONS -->
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+
+          <a
+            href="{% url 'applications:name_reservation' %}"
+            class="btn btn-outline-primary"
+          >
+            <i class="fa-solid fa-magnifying-glass me-2"></i>
+            Name Reservation
+          </a>
+
+          {% if payment.status == "confirmed" %}
+
+            <a
+              href="{% url 'applications:start' %}"
+              class="btn btn-primary"
+            >
+              <i class="fa-solid fa-building me-2"></i>
+              Register Business
+            </a>
+
+          {% endif %}
+
+          <a
+            href="{% url 'dashboard:home' %}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="fa-solid fa-gauge me-2"></i>
+            Dashboard
+          </a>
+
+        </div>
+
+      </section>
+
+
+      <!-- WORKFLOW CARD -->
+
+      <section class="dash-card p-4 mt-4">
+
+        <h2 class="h6 fw-bold mb-3">
+          <i class="fa-solid fa-list-check me-2"></i>
+          Reservation Payment Process
+        </h2>
+
+        <div class="row g-3">
+
+          <div class="col-md-3">
+
+            <div class="mini-card">
+
+              <div class="mini-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+
+              <div>
+                <div class="fw-semibold">
+                  1. Name Available
+                </div>
+
+                <div class="small text-muted">
+                  The proposed name is checked for availability.
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="col-md-3">
+
+            <div class="mini-card">
+
+              <div class="mini-icon">
+                <i class="fa-solid fa-credit-card"></i>
+              </div>
+
+              <div>
+                <div class="fw-semibold">
+                  2. Payment Submitted
+                </div>
+
+                <div class="small text-muted">
+                  The reservation payment is submitted.
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="col-md-3">
+
+            <div class="mini-card">
+
+              <div class="mini-icon">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+
+              <div>
+                <div class="fw-semibold">
+                  3. Staff Confirmation
+                </div>
+
+                <div class="small text-muted">
+                  CAC staff confirms the payment.
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="col-md-3">
+
+            <div class="mini-card">
+
+              <div class="mini-icon">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+
+              <div>
+                <div class="fw-semibold">
+                  4. Name Reserved
+                </div>
+
+                <div class="small text-muted">
+                  The name becomes officially reserved.
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+  </main>
+
+  <!-- FOOTER -->
+
+  <footer class="py-4">
+
+
+<div class="container">
+
+  <div
+    class="d-flex align-items-center justify-content-between flex-wrap gap-2 small text-muted"
+  >
+
+    <div>
+      © 2026 Corporate Affairs Commission (CAC), Nigeria
+    </div>
+
+    <div class="d-flex gap-3 flex-wrap">
+
+      <a class="footer-link" href="#">
+        Privacy Policy
+      </a>
+
+      <a class="footer-link" href="#">
+        Terms of Use
+      </a>
+
+      <a class="footer-link" href="#">
+        Contact Us
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,697 @@
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Name Reservation | iCRP</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body class="dash-body">
+
+  <!-- Topbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container">
+
+      <a class="navbar-brand d-flex align-items-center gap-2"
+         href="{% url 'frontend:home' %}">
+        <img
+          src="{% static 'images/logo.png' %}"
+          alt="CAC Logo"
+          class="brand-logo"
+          width="164"
+          height="55"
+        />
+      </a>
+
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#dashNav"
+        aria-controls="dashNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div id="dashNav" class="collapse navbar-collapse">
+
+        <ul class="navbar-nav mx-lg-auto mt-3 mt-lg-0 gap-lg-2">
+
+          <!-- Name Reservation -->
+          <li class="nav-item">
+            <a class="nav-link active"
+               href="{% url 'applications:name_reservation' %}">
+              <i class="fa-solid fa-magnifying-glass me-1"></i>
+              Name Reservation
+            </a>
+          </li>
+
+          <!-- Dashboard -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{% url 'dashboard:home' %}">
+              Dashboard
+            </a>
+          </li>
+
+          <!-- Register Business -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{% url 'applications:start' %}">
+              Register Business
+            </a>
+          </li>
+
+          <!-- Logout -->
+          <li class="nav-item">
+            <a class="nav-link"
+               href="{% url 'accounts:logout' %}">
+              Logout
+            </a>
+          </li>
+
+        </ul>
+
+        <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+
+          <div class="dash-user small text-muted d-none d-lg-inline">
+            <i class="fa-solid fa-user me-1"></i>
+            Welcome, {{ request.user.first_name }}
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- Page Header -->
+  <header class="dash-hero">
+
+    <div class="container py-4 py-lg-5">
+
+      <div class="row align-items-center">
+
+        <div class="col-lg-8">
+
+          <div class="dash-kicker mb-2">
+            <i class="fa-solid fa-building me-2"></i>
+            Corporate Affairs Commission
+          </div>
+
+          <h1 class="h3 fw-bold mb-2">
+            Name Reservation
+          </h1>
+
+          <p class="text-muted mb-0">
+            Search and reserve your proposed business name before
+            starting your registration application.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <main class="py-5">
+
+    <div class="container">
+
+      <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8">
+
+          <!-- Django Messages -->
+          {% if messages %}
+
+            {% for message in messages %}
+
+              <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+              >
+
+                {{ message }}
+
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+
+          <!-- Reservation Card -->
+          <section class="dash-card p-4 p-md-5">
+
+            <div class="text-center mb-4">
+
+              <div class="mini-icon mx-auto mb-3">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+
+              <h2 class="h5 fw-bold">
+                Check Business Name Availability
+              </h2>
+
+              <p class="text-muted small mb-0">
+                Enter the business name you want to reserve.
+                The system will check whether the name is already
+                reserved or registered.
+              </p>
+
+            </div>
+
+
+           
+                        <!-- Search Form -->
+                        <form
+                        method="POST"
+                        action="{% url 'applications:name_reservation' %}"
+                        id="nameReservationForm"
+                        >
+
+                        {% csrf_token %}
+
+                        <!-- IMPORTANT: This tells Django what operation to perform -->
+                        <input type="hidden" name="action" value="check">
+
+                        <div class="mb-3">
+
+                            <label
+                            for="proposed_name"
+                            class="form-label fw-semibold"
+                            >
+                            Proposed Business Name
+                            </label>
+
+                            <input
+                            type="text"
+                            class="form-control form-control-lg"
+                            id="proposed_name"
+                            name="proposed_name"
+                            placeholder="e.g. ATECH TECHNOLOGIES LIMITED"
+                            value="{{ checked_name|default:'' }}"
+                            required
+                            autocomplete="off"
+                            >
+
+                            <div class="form-text">
+                            Enter the complete proposed business name.
+                            </div>
+
+                        </div>
+
+                        <div class="d-grid">
+
+                            <button
+                            type="submit"
+                            class="btn btn-primary btn-lg"
+                            id="checkNameBtn"
+                            >
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>
+                            Check Availability
+                            </button>
+
+                        </div>
+
+                        </form>
+
+
+
+
+            <!-- Result -->
+            {% if available is not None %}
+
+              <hr class="my-4">
+
+
+              {% if available %}
+
+                <!-- NAME AVAILABLE -->
+                <div class="alert alert-success">
+
+                  <div class="d-flex align-items-start">
+
+                    <i class="fa-solid fa-circle-check fs-4 me-3"></i>
+
+                    <div>
+
+                      <h5 class="alert-heading fw-bold">
+                        Name Available
+                      </h5>
+
+                      <p class="mb-0">
+                        <strong>{{ checked_name }}</strong>
+                        is currently available for reservation.
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- Reservation Information -->
+                <div class="border rounded p-4 mt-3">
+
+                  <div class="d-flex justify-content-between
+                              align-items-center mb-3">
+
+                    <h5 class="fw-bold mb-0">
+                      Reserve This Name
+                    </h5>
+
+                    <span class="badge bg-success">
+                      Available
+                    </span>
+
+                  </div>
+
+
+                  <div class="row g-3 mb-4">
+
+                    <!-- Proposed Name -->
+                    <div class="col-md-6">
+
+                      <div class="small text-muted">
+                        Proposed Name
+                      </div>
+
+                      <div class="fw-semibold">
+                        {{ checked_name }}
+                      </div>
+
+                    </div>
+
+
+                    <!-- Reservation Fee -->
+                    <div class="col-md-6">
+
+                      <div class="small text-muted">
+                        Reservation Fee
+                      </div>
+
+                      <div class="fw-bold">
+                        ₦{{ reservation_fee|floatformat:2 }}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <div class="alert alert-info small">
+
+                    <i class="fa-solid fa-circle-info me-2"></i>
+
+                    Your name will only become officially reserved
+                    after the reservation payment has been confirmed
+                    by CAC staff.
+
+                  </div>
+
+
+                  <!-- Reserve Form -->
+                  <form
+                    method="POST"
+                    action="{% url 'applications:name_reservation' %}"
+                  >
+
+                    {% csrf_token %}
+
+                    <input
+                      type="hidden"
+                      name="proposed_name"
+                      value="{{ checked_name }}"
+                    >
+
+                    <input
+                      type="hidden"
+                      name="action"
+                      value="reserve"
+                    >
+
+                    <div class="d-grid">
+
+                      <button
+                        type="submit"
+                        class="btn btn-primary btn-lg"
+                      >
+
+                        <i class="fa-solid fa-lock me-2"></i>
+
+                        Reserve &amp; Make Payment
+
+                      </button>
+
+                    </div>
+
+                  </form>
+
+                </div>
+
+
+              {% else %}
+
+                <!-- NAME UNAVAILABLE -->
+                <div class="alert alert-danger">
+
+                  <div class="d-flex align-items-start">
+
+                    <i class="fa-solid fa-circle-xmark fs-4 me-3"></i>
+
+                    <div>
+
+                      <h5 class="alert-heading fw-bold">
+                        Name Not Available
+                      </h5>
+
+                      <p class="mb-0">
+                        <strong>{{ checked_name }}</strong>
+                        has already been reserved or registered.
+                        Please try another business name.
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              {% endif %}
+
+            {% endif %}
+
+          </section>
+
+
+          <!-- Existing Reservations -->
+          {% if reservations %}
+
+            <section class="dash-card p-4 mt-4">
+
+              <h2 class="h6 fw-bold mb-3">
+
+                <i class="fa-solid fa-clock-rotate-left me-2"></i>
+
+                My Name Reservations
+
+              </h2>
+
+
+              <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+                  <thead>
+
+                    <tr>
+
+                      <th>Reference</th>
+
+                      <th>Business Name</th>
+
+                      <th>Status</th>
+
+                      <th>Fee</th>
+
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                    {% for reservation in reservations %}
+
+                      <tr>
+
+                        <td class="fw-semibold">
+                          {{ reservation.reference_id }}
+                        </td>
+
+                        <td>
+                          {{ reservation.proposed_name }}
+                        </td>
+
+                        <td>
+
+                          {% if reservation.status == "reserved" %}
+
+                            <span class="badge bg-success">
+                              Reserved
+                            </span>
+
+                          {% elif reservation.status == "payment_submitted" %}
+
+                            <span class="badge bg-warning text-dark">
+                              Awaiting Confirmation
+                            </span>
+
+                          {% elif reservation.status == "awaiting_payment" %}
+
+                            <span class="badge bg-secondary">
+                              Awaiting Payment
+                            </span>
+
+                          {% elif reservation.status == "rejected" %}
+
+                            <span class="badge bg-danger">
+                              Rejected
+                            </span>
+
+                          {% elif reservation.status == "expired" %}
+
+                            <span class="badge bg-dark">
+                              Expired
+                            </span>
+
+                          {% endif %}
+
+                        </td>
+
+                        <td>
+                          ₦{{ reservation.reservation_fee|floatformat:2 }}
+                        </td>
+
+                      </tr>
+
+                    {% endfor %}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            </section>
+
+          {% endif %}
+
+
+          <!-- Information Card -->
+          <section class="dash-card p-4 mt-4">
+
+            <h2 class="h6 fw-bold mb-3">
+
+              <i class="fa-solid fa-circle-info me-2"></i>
+
+              How Name Reservation Works
+
+            </h2>
+
+
+            <div class="row g-3">
+
+              <!-- Step 1 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                  </div>
+
+                  <div>
+
+                    <div class="fw-semibold">
+                      1. Search
+                    </div>
+
+                    <div class="small text-muted">
+                      Check whether your proposed name is available.
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- Step 2 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                  </div>
+
+                  <div>
+
+                    <div class="fw-semibold">
+                      2. Make Payment
+                    </div>
+
+                    <div class="small text-muted">
+                      Pay the required name reservation fee.
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- Step 3 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                  </div>
+
+                  <div>
+
+                    <div class="fw-semibold">
+                      3. Get Reserved
+                    </div>
+
+                    <div class="small text-muted">
+                      Staff confirms payment and your name becomes reserved.
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="py-4">
+
+    <div class="container">
+
+      <div class="d-flex align-items-center justify-content-between
+                  flex-wrap gap-2 small text-muted">
+
+        <div>
+          © 2026 Corporate Affairs Commission (CAC), Nigeria
+        </div>
+
+        <div class="d-flex gap-3 flex-wrap">
+
+          <a class="footer-link" href="#">
+            Privacy Policy
+          </a>
+
+          <a class="footer-link" href="#">
+            Terms of Use
+          </a>
+
+          <a class="footer-link" href="#">
+            Contact Us
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- Bootstrap -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+
+
+  <!-- Page JavaScript -->
+  <script>
+
+    const form = document.getElementById("nameReservationForm");
+    const button = document.getElementById("checkNameBtn");
+
+    if (form && button) {
+
+      form.addEventListener("submit", function() {
+
+        button.disabled = true;
+
+        button.innerHTML =
+          '<span class="spinner-border spinner-border-sm me-2"></span>' +
+          'Checking...';
+
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>
+

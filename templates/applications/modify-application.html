@@ -99,8 +99,11 @@
               {% csrf_token %}
               <div class="col-12">
                 <label class="form-label fw-semibold">Proposed Business Name</label>
-                <input type="text" name="proposed_name_1" class="form-control" value="{{ app.proposed_name_1 }}" required>
-                <div class="invalid-feedback">Business name is required.</div>
+                <input type="text"  name="proposed_name_1" class="form-control" value="{{ reserved_name }}" readonly style="text-transform: uppercase;background-color: #f8f9fa;">
+                <div class="form-text">
+                      <i class="fa-solid fa-circle-check text-success me-1"></i>
+                      This is the business name officially reserved for this application and cannot be changed.
+                  </div>
               </div>
 
               <div class="col-12 col-md-6">

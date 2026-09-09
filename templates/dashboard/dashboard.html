@@ -33,6 +33,7 @@
 
       <div id="dashNav" class="collapse navbar-collapse">
         <ul class="navbar-nav mx-lg-auto mt-3 mt-lg-0 gap-lg-2">
+          <li class="nav-item"> <a class="nav-link" href="{% url 'applications:name_reservation' %}"> <i class="fa-solid fa-magnifying-glass me-1"></i> Name Reservation </a> </li>
           <li class="nav-item"><a class="nav-link" href="#register">Register Business</a></li>
           <li class="nav-item"><a class="nav-link" href="#uploads">Uploads</a></li>
           <li class="nav-item"><a class="nav-link" href="#applications">Applications</a></li>
@@ -144,15 +145,43 @@
               </div>
             </div>
 
-            <div class="col-12 d-grid d-sm-flex gap-2 mt-2">
-              <a class="btn btn-primary btn-lg" href="{% url 'applications:start' %}">
-                Start New Application <i class="fa-solid fa-arrow-right ms-2"></i>
-              </a>
+            <div class="col-12 d-flex gap-2 mt-2">
+                        {% if has_reserved_name %}
 
-              <a class="btn btn-outline-primary btn-lg" href="#applications">
+            <a class="btn btn-primary btn-sm" href="{% url 'applications:start' %}">
+              Start New Application <i class="fa-solid fa-arrow-right ms-2"></i>
+            </a>
+
+          {% else %}
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              disabled
+              title="You must have a confirmed name reservation before starting an application."
+            >
+              <i class="fa-solid fa-lock me-2"></i>
+              Start New Application
+            </button>
+
+          {% endif %}
+                   
+
+              <a class="btn btn-outline-primary btn-sm " href="#applications">
                 View My Applications
               </a>
             </div>
+             {% if not has_reserved_name %}
+            <div class="alert alert-warning mt-3 mb-0 small">
+              <i class="fa-solid fa-circle-info me-1"></i>
+              You must reserve a business name and have your payment confirmed by CAC
+              staff before you can start a business registration application.
+              <a href="{% url 'applications:name_reservation' %}" class="fw-semibold">
+                Reserve a Name
+              </a>
+            </div>
+          
+          {% endif %}
           </div>
         </section>
 

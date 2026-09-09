@@ -45,7 +45,7 @@ class Application(models.Model):
     reference_id = models.CharField(max_length=30, unique=True, editable=False, db_index=True)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="applications")
-
+    name_reservation = models.OneToOneField("NameReservation",on_delete=models.PROTECT, null=True, blank=True, related_name="application" )
     proposed_name_1 = models.CharField(max_length=200,)
     proposed_name_2 = models.CharField(max_length=200, blank=True)
 
@@ -106,7 +106,7 @@ class Application(models.Model):
     def generate_verification_token(self):
         if not self.verification_token:  # prevent regeneration
             raw_string = f"{self.registration_number}{self.proposed_name_1}{uuid.uuid4()}"
-            self.verification_token = hashlib.sha256(raw_string.encode()).hexdigest()
+            self.verification_token = hashlib.sha256(raw_string.encode()).hexdigest()   #Assign the hash to the verification token
         return self.verification_token
 
     # Generate QR code image
@@ -127,6 +127,7 @@ class Application(models.Model):
         filename = f"QR-{self.registration_number}.png"
         self.qr_code.save(filename, File(buffer), save=False)
     
+    #Function to generate the pdf format for the certificate
     def generate_and_save_certificate(self):
         logo_path = os.path.join(settings.BASE_DIR,"static","images","arm.png" ).replace("\\", "/")
         watermark_path = os.path.join(settings.BASE_DIR,"static","images","watermark.png" ).replace("\\", "/")
@@ -149,6 +150,7 @@ class Application(models.Model):
 
         self.certificate.save(filename,ContentFile(pdf),save=False)
 
+#Function to approve the certificate
     def approve(self, staff_user=None):
         if self.status == self.Status.APPROVED:
             return
@@ -196,4 +198,220 @@ class Application(models.Model):
         self.save()
 
 
-   
+
+
+class SystemFee(models.Model):
+    """
+    Stores system fees that can be changed without modifying the code.
+    """
+
+    name_reservation_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
+    application_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "System Fees"
+
+    class Meta:
+        verbose_name = "System Fee"
+        verbose_name_plural = "System Fees"
+
+
+class NameReservation(models.Model):
+
+    class Status(models.TextChoices):
+        AWAITING_PAYMENT = "awaiting_payment", "Awaiting Payment"
+        PAYMENT_SUBMITTED = "payment_submitted", "Payment Submitted"
+        RESERVED = "reserved", "Reserved"
+        REJECTED = "rejected", "Rejected"
+        EXPIRED = "expired", "Expired"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    reference_id = models.CharField(
+        max_length=30,
+        unique=True,
+        editable=False,
+        db_index=True
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="name_reservations"
+    )
+
+    proposed_name = models.CharField(
+        max_length=200,
+        db_index=True
+    )
+
+    status = models.CharField(
+        max_length=30,
+        choices=Status.choices,
+        default=Status.AWAITING_PAYMENT
+    )
+
+    reservation_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    payment_reference = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    payment_submitted_at = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
+    confirmed_at = models.DateTimeField(
+        blank=True,
+        null=True
+    )
+
+    confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="confirmed_name_reservations"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.reference_id} - {self.proposed_name}"
+
+    def save(self, *args, **kwargs):
+
+        if not self.reference_id:
+            self.reference_id = (
+                "NR-" + uuid.uuid4().hex[:10].upper()
+            )
+
+        # Normalize the business name
+        self.proposed_name = " ".join(
+            self.proposed_name.strip().upper().split()
+        )
+
+        super().save(*args, **kwargs)
+
+
+class Payment(models.Model):
+
+    class PaymentType(models.TextChoices):
+        NAME_RESERVATION = (
+            "name_reservation",
+            "Name Reservation"
+        )
+
+        APPLICATION = (
+            "application",
+            "Application"
+        )
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        SUBMITTED = "submitted", "Payment Submitted"
+        CONFIRMED = "confirmed", "Confirmed"
+        FAILED = "failed", "Failed"
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="payments"
+    )
+
+    payment_type = models.CharField(
+        max_length=30,
+        choices=PaymentType.choices
+    )
+
+    reservation = models.ForeignKey(
+        NameReservation,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="payments"
+    )
+
+    application = models.ForeignKey(
+        Application,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="payments"
+    )
+
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    payment_reference = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    submitted_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    confirmed_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="confirmed_payments"
+    )
+
+    def __str__(self):
+        return (
+            f"{self.payment_reference} - "
+            f"{self.amount}"
+        )

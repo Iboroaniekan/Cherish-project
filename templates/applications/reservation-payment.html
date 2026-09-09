@@ -1,0 +1,713 @@
+
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Reservation Payment | iCRP</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+  <style>
+    .payment-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #eaf7ef;
+      color: #198754;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .payment-summary {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .payment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .payment-row:last-child {
+      border-bottom: none;
+    }
+
+    .payment-total {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #198754;
+    }
+
+    .reference-box {
+      background: #f1f3f5;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-family: monospace;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .notice-box {
+      border-left: 4px solid #0d6efd;
+    }
+  </style>
+</head>
+
+<body class="dash-body">
+
+  <!-- =========================================================
+       NAVBAR
+  ========================================================== -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+
+    <div class="container">
+
+      <a
+        class="navbar-brand d-flex align-items-center gap-2"
+        href="{% url 'frontend:home' %}"
+      >
+        <img
+          src="{% static 'images/logo.png' %}"
+          alt="CAC Logo"
+          class="brand-logo"
+          width="164"
+          height="55"
+        />
+      </a>
+
+
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#dashNav"
+        aria-controls="dashNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+
+      <div id="dashNav" class="collapse navbar-collapse">
+
+        <ul class="navbar-nav mx-lg-auto mt-3 mt-lg-0 gap-lg-2">
+
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'applications:name_reservation' %}"
+            >
+              <i class="fa-solid fa-magnifying-glass me-1"></i>
+              Name Reservation
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'dashboard:home' %}"
+            >
+              Dashboard
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'applications:start' %}"
+            >
+              Register Business
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              href="{% url 'accounts:logout' %}"
+            >
+              Logout
+            </a>
+          </li>
+
+        </ul>
+
+
+        <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+
+          <div class="dash-user small text-muted d-none d-lg-inline">
+
+            <i class="fa-solid fa-user me-1"></i>
+
+            Welcome, {{ request.user.first_name }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+  <!-- =========================================================
+       PAGE HEADER
+  ========================================================== -->
+  <header class="dash-hero">
+
+    <div class="container py-4 py-lg-5">
+
+      <div class="row align-items-center">
+
+        <div class="col-lg-8">
+
+          <div class="dash-kicker mb-2">
+
+            <i class="fa-solid fa-building me-2"></i>
+
+            Corporate Affairs Commission
+
+          </div>
+
+
+          <h1 class="h3 fw-bold mb-2">
+
+            Reservation Payment
+
+          </h1>
+
+
+          <p class="text-muted mb-0">
+
+            Complete the simulated payment for your business name
+            reservation.
+
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================================
+       MAIN CONTENT
+  ========================================================== -->
+  <main class="py-5">
+
+    <div class="container">
+
+      <div class="row justify-content-center">
+
+        <div class="col-12 col-lg-8">
+
+
+          <!-- Django Messages -->
+          {% if messages %}
+
+            {% for message in messages %}
+
+              <div
+                class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                role="alert"
+              >
+
+                {{ message }}
+
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+
+              </div>
+
+            {% endfor %}
+
+          {% endif %}
+
+
+          <!-- ===================================================
+               PAYMENT CARD
+          ==================================================== -->
+          <section class="dash-card p-4 p-md-5">
+
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+
+              <div class="payment-icon mx-auto mb-3">
+
+                <i class="fa-solid fa-credit-card"></i>
+
+              </div>
+
+
+              <h2 class="h5 fw-bold">
+
+                Confirm Reservation Payment
+
+              </h2>
+
+
+              <p class="text-muted small mb-0">
+
+                Review your reservation details before submitting
+                the simulated payment.
+
+              </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 RESERVATION DETAILS
+            ================================================== -->
+            <div class="payment-summary mb-4">
+
+              <div class="payment-row">
+
+                <div>
+
+                  <div class="small text-muted">
+                    Reservation Reference
+                  </div>
+
+                </div>
+
+
+                <div class="reference-box">
+
+                  {{ reservation.reference_id }}
+
+                </div>
+
+              </div>
+
+
+              <div class="payment-row">
+
+                <div>
+
+                  <div class="small text-muted">
+                    Proposed Business Name
+                  </div>
+
+                </div>
+
+
+                <div class="fw-semibold text-end">
+
+                  {{ reservation.proposed_name }}
+
+                </div>
+
+              </div>
+
+
+              <div class="payment-row">
+
+                <div>
+
+                  <div class="small text-muted">
+                    Payment Type
+                  </div>
+
+                </div>
+
+
+                <div class="fw-semibold">
+
+                  Name Reservation
+
+                </div>
+
+              </div>
+
+
+              <div class="payment-row">
+
+                <div>
+
+                  <div class="small text-muted">
+                    Reservation Fee
+                  </div>
+
+                </div>
+
+
+                <div class="payment-total">
+
+                  ₦{{ reservation.reservation_fee|floatformat:2 }}
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 IMPORTANT NOTICE
+            ================================================== -->
+            <div class="alert alert-info notice-box small mb-4">
+
+              <div class="d-flex align-items-start">
+
+                <i class="fa-solid fa-circle-info me-3 mt-1"></i>
+
+                <div>
+
+                  <strong>Important:</strong>
+
+                  This is a simulated payment for the purpose of
+                  this system.
+
+                  Your business name will
+
+                  <strong>not become officially reserved</strong>
+
+                  immediately after submitting this payment.
+
+                  CAC staff must first confirm the payment.
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAYMENT METHOD
+            ================================================== -->
+            <div class="border rounded p-4 mb-4">
+
+              <h3 class="h6 fw-bold mb-3">
+
+                <i class="fa-solid fa-money-check-dollar me-2"></i>
+
+                Payment Method
+
+              </h3>
+
+
+              <div class="d-flex align-items-center gap-3">
+
+                <div class="mini-icon">
+
+                  <i class="fa-solid fa-building-columns"></i>
+
+                </div>
+
+
+                <div>
+
+                  <div class="fw-semibold">
+
+                    Simulated Bank Transfer
+
+                  </div>
+
+
+                  <div class="small text-muted">
+
+                    Click the button below to submit your simulated
+                    payment.
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PAYMENT FORM
+            ================================================== -->
+            <form
+              method="POST"
+              action="{% url 'applications:reservation_payment' reservation.reference_id %}"
+              id="paymentForm"
+            >
+
+              {% csrf_token %}
+
+
+              <div class="d-grid">
+
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-lg"
+                  id="paymentButton"
+                >
+
+                  <i class="fa-solid fa-paper-plane me-2"></i>
+
+                  Submit Payment
+
+                </button>
+
+              </div>
+
+            </form>
+
+
+            <!-- Cancel -->
+            <div class="text-center mt-3">
+
+              <a
+                href="{% url 'applications:name_reservation' %}"
+                class="text-decoration-none small"
+              >
+
+                <i class="fa-solid fa-arrow-left me-1"></i>
+
+                Back to Name Reservation
+
+              </a>
+
+            </div>
+
+
+          </section>
+
+
+          <!-- ===================================================
+               PAYMENT PROCESS
+          ==================================================== -->
+          <section class="dash-card p-4 mt-4">
+
+            <h2 class="h6 fw-bold mb-3">
+
+              <i class="fa-solid fa-list-check me-2"></i>
+
+              What Happens Next?
+
+            </h2>
+
+
+            <div class="row g-3">
+
+
+              <!-- Step 1 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                  </div>
+
+
+                  <div>
+
+                    <div class="fw-semibold">
+
+                      1. Submit Payment
+
+                    </div>
+
+
+                    <div class="small text-muted">
+
+                      Submit your simulated reservation payment.
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- Step 2 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                  </div>
+
+
+                  <div>
+
+                    <div class="fw-semibold">
+
+                      2. Staff Confirmation
+
+                    </div>
+
+
+                    <div class="small text-muted">
+
+                      CAC staff reviews and confirms the payment.
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- Step 3 -->
+              <div class="col-md-4">
+
+                <div class="mini-card">
+
+                  <div class="mini-icon">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                  </div>
+
+
+                  <div>
+
+                    <div class="fw-semibold">
+
+                      3. Name Reserved
+
+                    </div>
+
+
+                    <div class="small text-muted">
+
+                      The name becomes officially reserved after
+                      confirmation.
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================== -->
+  <footer class="py-4">
+
+    <div class="container">
+
+      <div
+        class="d-flex align-items-center justify-content-between
+               flex-wrap gap-2 small text-muted"
+      >
+
+        <div>
+
+          © 2026 Corporate Affairs Commission (CAC), Nigeria
+
+        </div>
+
+
+        <div class="d-flex gap-3 flex-wrap">
+
+          <a class="footer-link" href="#">
+            Privacy Policy
+          </a>
+
+          <a class="footer-link" href="#">
+            Terms of Use
+          </a>
+
+          <a class="footer-link" href="#">
+            Contact Us
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- Bootstrap -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+  </script>
+
+
+  <!-- Payment Button -->
+  <script>
+
+    const paymentForm = document.getElementById("paymentForm");
+    const paymentButton = document.getElementById("paymentButton");
+
+    if (paymentForm && paymentButton) {
+
+      paymentForm.addEventListener("submit", function () {
+
+        paymentButton.disabled = true;
+
+        paymentButton.innerHTML =
+          '<span class="spinner-border spinner-border-sm me-2"></span>' +
+          'Submitting Payment...';
+
+      });
+
+    }
+
+  </script>
+
+</body>
+</html>
+

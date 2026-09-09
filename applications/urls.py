@@ -11,6 +11,12 @@ urlpatterns = [
     path("certificate/view/<str:reference_id>/", views.view_certificate, name="view_certificate"),
     path("verify/<str:token>/", views.verify_certificate, name="verify_certificate"),
     path('public-search/', views.public_search, name='public_search'),
-    path("certificate/public/<str:token>/",views.public_certificate,name="public_certificate",)
+    path("certificate/public/<str:token>/",views.public_certificate,name="public_certificate"),
+    path("name-reservation/", views.name_reservation, name="name_reservation" ),
+    path("name-reservation/payment/<str:reference_id>/", views.reservation_payment, name="reservation_payment" ),
+    path("reservation-payment-status/<str:reference_id>/",views.reservation_payment_status, name="reservation_payment_status"),
+    path("application-payment/<str:reference_id>/",views.application_payment,name="application_payment"),
+    path("application-payment-status/<str:reference_id>/", views.application_payment_status,name="application_payment_status")
+   
 
 ]

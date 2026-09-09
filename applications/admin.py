@@ -1,6 +1,6 @@
 from django.utils.html import format_html
 from django.contrib import admin,messages
-from .models import Application
+from .models import Application,NameReservation, Payment, SystemFee
 from django.utils.safestring import mark_safe
 from django import forms
 from django.utils import timezone
@@ -178,3 +178,426 @@ class ApplicationAdmin(admin.ModelAdmin):
         }.get(obj.status, 'black')
         return format_html('<span style="color:{};">{}</span>', color, obj.get_status_display())
     colored_status.short_description = "Status"
+
+
+@admin.register(SystemFee)
+class SystemFeeAdmin(admin.ModelAdmin):
+    list_display = (
+        "name_reservation_fee",
+        "application_fee",
+        "updated_at",
+    )
+
+    fields = (
+        "name_reservation_fee",
+        "application_fee",
+        "updated_at",
+    )
+
+    readonly_fields = ("updated_at",)
+
+
+@admin.register(NameReservation)
+class NameReservationAdmin(admin.ModelAdmin):
+    list_display = (
+        "reference_id",
+        "proposed_name",
+        "user",
+        "reservation_fee",
+        "status",
+        "payment_reference",
+        "created_at",
+        "confirmed_at",
+    )
+
+    list_filter = (
+        "status",
+        "created_at",
+        "confirmed_at",
+    )
+
+    search_fields = (
+        "reference_id",
+        "proposed_name",
+        "user__email",
+        "user__username",
+        "payment_reference",
+    )
+
+    readonly_fields = (
+        "reference_id",
+        "user",
+        "proposed_name",
+        "reservation_fee",
+        "payment_reference",
+        "payment_submitted_at",
+        "confirmed_at",
+        "confirmed_by",
+        "created_at",
+        "updated_at",
+    )
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "payment_reference",
+        "user",
+        "payment_type",
+        "amount",
+        "status",
+        "created_at",
+        "submitted_at",
+        "confirmed_at",
+        "confirmed_by",
+    )
+
+    list_filter = (
+        "payment_type",
+        "status",
+        "created_at",
+        "confirmed_at",
+    )
+
+    search_fields = (
+        "payment_reference",
+        "user__email",
+        "user__username",
+        "reservation__reference_id",
+        "reservation__proposed_name",
+    )
+
+    readonly_fields = (
+        "user",
+        "payment_type",
+        "reservation",
+        "application",
+        "amount",
+        "payment_reference",
+        "created_at",
+        "submitted_at",
+        "confirmed_at",
+        "confirmed_by",
+    )
+
+    actions = ["confirm_selected_payments"]
+
+    def save_model(self, request, obj, form, change):
+        """
+        Handle manual payment status changes made by staff
+        inside the Django Admin.
+        """
+
+        old_status = None
+
+        if change:
+            old_obj = Payment.objects.get(pk=obj.pk)
+            old_status = old_obj.status
+
+        # Save the payment first
+        super().save_model(request, obj, form, change)
+
+    
+        # =================================================
+        # APPLICATION PAYMENT
+        # =================================================
+        if obj.payment_type == Payment.PaymentType.APPLICATION:
+
+            application = obj.application
+
+            if not application:
+                return
+
+            # ---------------------------------------------
+            # PAYMENT CONFIRMED
+            # ---------------------------------------------
+            if obj.status == Payment.Status.CONFIRMED:
+
+                if (
+                    old_status != Payment.Status.CONFIRMED
+                    or not obj.confirmed_at
+                    or not obj.confirmed_by
+                ):
+                    obj.confirmed_at = timezone.now()
+                    obj.confirmed_by = request.user
+
+                    obj.save(
+                        update_fields=[
+                            "confirmed_at",
+                            "confirmed_by",
+                        ]
+                    )
+
+                # Move application to Pending Review
+                if application.status != Application.Status.APPROVED:
+                    application.status = Application.Status.PENDING
+                    application.save(
+                        update_fields=[
+                            "status",
+                            "updated_at",
+                        ]
+                    )
+
+            # ---------------------------------------------
+            # PAYMENT SUBMITTED
+            # ---------------------------------------------
+            elif obj.status == Payment.Status.SUBMITTED:
+
+                obj.confirmed_at = None
+                obj.confirmed_by = None
+
+                obj.save(
+                    update_fields=[
+                        "confirmed_at",
+                        "confirmed_by",
+                    ]
+                )
+
+            # ---------------------------------------------
+            # PAYMENT FAILED
+            # ---------------------------------------------
+            elif obj.status == Payment.Status.FAILED:
+
+                obj.confirmed_at = None
+                obj.confirmed_by = None
+
+                obj.save(
+                    update_fields=[
+                        "confirmed_at",
+                        "confirmed_by",
+                    ]
+                )
+
+            return
+
+
+        # =================================================
+        # NAME RESERVATION PAYMENT
+        # =================================================
+
+        # Only synchronize name reservation payments
+        if obj.payment_type != Payment.PaymentType.NAME_RESERVATION:
+            return
+
+        reservation = obj.reservation
+
+        if not reservation:
+            return
+
+        # -------------------------------------------------
+        # PAYMENT CONFIRMED
+        # -------------------------------------------------
+        if obj.status == Payment.Status.CONFIRMED:
+
+            if (
+                old_status != Payment.Status.CONFIRMED
+                or not obj.confirmed_at
+                or not obj.confirmed_by
+            ):
+                obj.confirmed_at = timezone.now()
+                obj.confirmed_by = request.user
+
+                obj.save(
+                    update_fields=[
+                        "confirmed_at",
+                        "confirmed_by",
+                    ]
+                )
+
+            # Officially reserve the name
+            reservation.status = NameReservation.Status.RESERVED
+            reservation.confirmed_at = obj.confirmed_at
+            reservation.confirmed_by = request.user
+
+            reservation.save(
+                update_fields=[
+                    "status",
+                    "confirmed_at",
+                    "confirmed_by",
+                    "updated_at",
+                ]
+            )
+
+        # -------------------------------------------------
+        # PAYMENT SUBMITTED
+        # -------------------------------------------------
+        elif obj.status == Payment.Status.SUBMITTED:
+
+            reservation.status = NameReservation.Status.PAYMENT_SUBMITTED
+            reservation.confirmed_at = None
+            reservation.confirmed_by = None
+
+            reservation.save(
+                update_fields=[
+                    "status",
+                    "confirmed_at",
+                    "confirmed_by",
+                    "updated_at",
+                ]
+            )
+
+            obj.confirmed_at = None
+            obj.confirmed_by = None
+
+            obj.save(
+                update_fields=[
+                    "confirmed_at",
+                    "confirmed_by",
+                ]
+            )
+
+        # -------------------------------------------------
+        # PAYMENT FAILED
+        # -------------------------------------------------
+        elif obj.status == Payment.Status.FAILED:
+
+            reservation.status = NameReservation.Status.AWAITING_PAYMENT
+            reservation.confirmed_at = None
+            reservation.confirmed_by = None
+
+            reservation.save(
+                update_fields=[
+                    "status",
+                    "confirmed_at",
+                    "confirmed_by",
+                    "updated_at",
+                ]
+            )
+
+            obj.confirmed_at = None
+            obj.confirmed_by = None
+
+            obj.save(
+                update_fields=[
+                    "confirmed_at",
+                    "confirmed_by",
+                ]
+            )
+
+    # -----------------------------------------------------
+    # ADMIN ACTION: CONFIRM SELECTED PAYMENTS
+    # -----------------------------------------------------
+    @admin.action(description="Confirm selected payment(s)")
+    def confirm_selected_payments(self, request, queryset):
+
+        confirmed_count = 0
+        skipped_count = 0
+
+        for payment in queryset:
+
+            # -------------------------------------------------
+            # ONLY PROCESS SUBMITTED PAYMENTS
+            # -------------------------------------------------
+            if payment.status != Payment.Status.SUBMITTED:
+                skipped_count += 1
+                continue
+
+            now = timezone.now()
+
+            # =================================================
+            # NAME RESERVATION PAYMENT
+            # =================================================
+            if payment.payment_type == Payment.PaymentType.NAME_RESERVATION:
+
+                reservation = payment.reservation
+
+                # Reservation must exist
+                if not reservation:
+                    skipped_count += 1
+                    continue
+
+                # Reservation must be awaiting confirmation
+                if reservation.status != NameReservation.Status.PAYMENT_SUBMITTED:
+                    skipped_count += 1
+                    continue
+
+                # Confirm payment
+                payment.status = Payment.Status.CONFIRMED
+                payment.confirmed_at = now
+                payment.confirmed_by = request.user
+
+                payment.save(
+                    update_fields=[
+                        "status",
+                        "confirmed_at",
+                        "confirmed_by",
+                    ]
+                )
+
+                # Officially reserve the name
+                reservation.status = NameReservation.Status.RESERVED
+                reservation.confirmed_at = now
+                reservation.confirmed_by = request.user
+
+                reservation.save(
+                    update_fields=[
+                        "status",
+                        "confirmed_at",
+                        "confirmed_by",
+                        "updated_at",
+                    ]
+                )
+
+                confirmed_count += 1
+
+            # =================================================
+            # APPLICATION PAYMENT
+            # =================================================
+            elif payment.payment_type == Payment.PaymentType.APPLICATION:
+
+                application = payment.application
+
+                # Application must exist
+                if not application:
+                    skipped_count += 1
+                    continue
+
+                # Confirm payment
+                payment.status = Payment.Status.CONFIRMED
+                payment.confirmed_at = now
+                payment.confirmed_by = request.user
+
+                payment.save(
+                    update_fields=[
+                        "status",
+                        "confirmed_at",
+                        "confirmed_by",
+                    ]
+                )
+
+                # Move application into Pending Review
+                application.status = Application.Status.PENDING
+
+                application.save(
+                    update_fields=[
+                        "status",
+                        "updated_at",
+                    ]
+                )
+
+                confirmed_count += 1
+
+            else:
+                skipped_count += 1
+
+        # -----------------------------------------------------
+        # SUCCESS MESSAGE
+        # -----------------------------------------------------
+        if confirmed_count:
+            self.message_user(
+                request,
+                f"{confirmed_count} payment(s) confirmed successfully.",
+                messages.SUCCESS,
+            )
+
+        # -----------------------------------------------------
+        # SKIPPED MESSAGE
+        # -----------------------------------------------------
+        if skipped_count:
+            self.message_user(
+                request,
+                f"{skipped_count} payment(s) were skipped because "
+                f"they were not valid submitted payments.",
+                messages.WARNING,
+            )
